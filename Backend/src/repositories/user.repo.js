@@ -5,15 +5,10 @@ async function findByEmail(email) {
     return rows[0];
 }
 
-async function findByCpf(cpf) {
-  const [rows] = await db.query("SELECT * FROM users WHERE cpf = ?",[cpf]);
-  return rows[0];
-}
-
-async function createUser(name, cpf, email, password_hash) {
+async function createUser(name, email, senha) {
     const [result] = await db.query(
-        "INSERT INTO users (name, cpf, email, password_hash) VALUES (?, ?, ?, ?)",
-        [name, cpf, email, password_hash]
+        "INSERT INTO users (name, email, senha) VALUES (?, ?, ?)",
+        [name, email, senha]
     );
     return result.insertId;
 }
@@ -23,10 +18,10 @@ async function findById(id) {
     return rows[0]
 }
 
-async function userUpdate(id, name, cpf, email, password_hash) {
+async function userUpdate(id, name, email, senha) {
     await db.query(
-        "UPDATE users SET name = ?, cpf = ?, email = ?, password_hash = ? WHERE id = ?",
-        [name, cpf, email, password_hash, id]
+        "UPDATE users SET name = ?, email = ?, senha = ? WHERE id = ?",
+        [name, email,senha, id]
     );
 }
 
@@ -35,4 +30,4 @@ async function userDelete(id) {
   );
 }
 
-module.exports = {findByEmail, findByCpf, createUser, findById, userUpdate, userDelete};
+module.exports = {findByEmail, createUser, findById, userUpdate, userDelete};

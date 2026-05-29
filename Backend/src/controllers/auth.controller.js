@@ -1,24 +1,16 @@
 const jwt = require("jsonwebtoken");
 const { hashPassword, comparePassword } = require("../utils/password");
 const repo = require("../repositories/user.repo");
-const { isValidCPF } = require("../utils/cpf");
 
 async function register(req, res, next) {
   try {
-    const { name, cpf, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     const exists = await repo.findByEmail(email);
     if (exists) return res.status(409).json({ message: "E-mail já cadastrado" });
 
-    if (!isValidCPF(cpf)) {
-      return res.status(400).json({ message: "CPF inválido" });
-    }
-    
-    const exiteCpf = await repo.findByCpf(cpf);
-    if(exiteCpf) return res.status(409).json({message: "CPF já cadastrado"})
-
     const hash = await hashPassword(password);
-    await repo.createUser(name, cpf, email, hash);
+    await repo.createUser(name, email, hash);
     res.status(201).json({ message: "Usuário criado" });
   } catch (e) { next(e); }
 }
