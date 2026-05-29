@@ -67,7 +67,7 @@ export function HoneyPoints({ value, compact = false, variant = "default" }) {
         <img src={florzinha} alt="Florzinha" className="h-10 w-10 object-cover" />
         <div className="text-center leading-tight">
           <strong className="block text-base font-black text-[#2f261d]">{value}</strong>
-          <span className="text-[10px] font-bold text-[#8a551f]">Pontos de Mel</span>
+          <span className="text-[12px] font-bold text-[#8a551f]">Pontos de Mel</span>
         </div>
       </div>
     </section>
@@ -132,7 +132,7 @@ export function Sidebar({ activePage, onNavigate }) {
 
 export function AppFrame({ activePage, onNavigate, children, rightColumn }) {
   return (
-    <main className="min-h-screen bg-[#e9e9e9] p-2 font-sans text-[#5c3717] lg:pl-0 lg:py-2 lg:pr-2">
+   <main className="min-h-screen bg-[#e9e9e9] p-2 font-sans text-[#5c3717] lg:pl-0 lg:py-2 lg:pr-2">
       {/* Ajustamos o gap e o alinhamento da grid principal */}
       <div className="grid w-full gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-cols-[220px_minmax(0,1fr)_220px] xl:grid-cols-[260px_minmax(0,1fr)_250px]">
         <Sidebar activePage={activePage} onNavigate={onNavigate} />

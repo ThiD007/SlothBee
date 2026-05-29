@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 
 html,
@@ -11,3 +12,6 @@ body,
 body {
   overflow-x: hidden;
 }
+=======
+@import "tailwindcss";
+>>>>>>> 01ffad8982e241969cce0f1e8deae36b0fb3346e

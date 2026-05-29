@@ -14,7 +14,7 @@ function Inicio({ activePage, onNavigate }) {
         <aside className="grid gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-rows-[auto_minmax(280px,1fr)_auto]">
           <HoneyPoints value="250" compact />
 
-          <section className="flex min-h-[330px] flex-col justify-between rounded-lg bg-white px-4 py-8 text-center shadow-sm lg:min-h-0">
+          <section className="flex min-h-[330px] flex-col justify-between rounded-lg bg-white text-center shadow-sm lg:min-h-0">
             <div className="flex items-center justify-center gap-1 text-[12px] font-extrabold text-[#8d641e]">
               <Icon className="h-7 w-7 text-[#9dbb35]" name="timer" />
               Temporizador de foco
@@ -23,7 +23,7 @@ function Inicio({ activePage, onNavigate }) {
             <span className="mx-auto inline-flex rounded-full bg-[#eee5bf] px-5 py-2 text-[12px] font-bold text-[#957334]">
               Sessão de foco
             </span>
-            <button className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#a5bd43] px-4 text-[1px] font-extrabold text-[#786018]">
+            <button className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#a5bd43] px-4 text-[12px] font-extrabold text-[#786018]">
               Iniciar foco
               <Icon className="h-5 w-5" name="play" />
             </button>
