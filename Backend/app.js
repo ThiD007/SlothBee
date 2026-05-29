@@ -4,10 +4,10 @@ const cors = require("cors");
 
 // rotas que preciso criar 
 
-const authRoutes = require("./routes/auth.routes");
-const userRoutes = require("./routes/users.routes");
+const authRoutes = require("./src/routes/auth.route");
+const userRoutes = require("./src/routes/user.route");
 
-const { errorHandler} = require("./middlewares/error.middleware");
+const { errorHandler} = require("./src/middlewares/error.middleware");
 
 const app = express();
 

@@ -1,9 +1,14 @@
 import { Icon } from "./shared.jsx"
 
-function Cadastro({ onClose, onBackToLogin, onCreate }) {
+function Cadastro({ onClose, onBackToLogin, onCreate, isLoading = false, message = "" }) {
   function handleSubmit(event) {
     event.preventDefault()
-    onCreate()
+    const formData = new FormData(event.currentTarget)
+    onCreate({
+      nome: formData.get("nome"),
+      email: formData.get("email"),
+      senha: formData.get("senha"),
+    })
   }
 
   return (
@@ -28,7 +33,9 @@ function Cadastro({ onClose, onBackToLogin, onCreate }) {
         </label>
         <input
           id="name"
+          name="nome"
           type="text"
+          required
           className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
         />
 
@@ -37,7 +44,9 @@ function Cadastro({ onClose, onBackToLogin, onCreate }) {
         </label>
         <input
           id="register-email"
+          name="email"
           type="email"
+          required
           className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
         />
 
@@ -46,16 +55,29 @@ function Cadastro({ onClose, onBackToLogin, onCreate }) {
         </label>
         <input
           id="register-password"
+          name="senha"
           type="password"
+          required
           className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
         />
 
+        {message && <p className="mt-4 text-sm font-bold text-[#9a5a1e]">{message}</p>}
+
         <div className="mt-7 flex items-center justify-end gap-3">
-          <button type="button" onClick={onBackToLogin} className="text-lg font-black text-[#9a5a1e]">
+          <button
+            type="button"
+            onClick={onBackToLogin}
+            className="text-lg font-black text-[#9a5a1e]"
+            disabled={isLoading}
+          >
             Login
           </button>
-          <button type="submit" className="rounded-full bg-[#fbe7c6] px-6 py-3 text-lg font-black text-[#9a5a1e]">
-            Criar conta
+          <button
+            type="submit"
+            className="rounded-full bg-[#fbe7c6] px-6 py-3 text-lg font-black text-[#9a5a1e]"
+            disabled={isLoading}
+          >
+            {isLoading ? "Criando..." : "Criar conta"}
           </button>
         </div>
       </form>

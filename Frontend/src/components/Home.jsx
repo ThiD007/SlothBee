@@ -1,4 +1,7 @@
 import { useState } from "react"
+import Cadastro from "./Cadastro.jsx"
+import Login from "./Login.jsx"
+import { login, register } from "../services/auth.js"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
@@ -82,7 +85,16 @@ function ProgressBar({ left, right }) {
   )
 }
 
-function LandingPage({ isLoginOpen, onOpenLogin, onCloseLogin, onEnter }) {
+function LandingPage({
+  authModal,
+  authMessage,
+  isAuthLoading,
+  onOpenLogin,
+  onOpenCadastro,
+  onCloseAuth,
+  onLogin,
+  onRegister,
+}) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#f3f3f3] font-sans text-[#5c3717]">
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-6 sm:px-10">
@@ -116,7 +128,7 @@ function LandingPage({ isLoginOpen, onOpenLogin, onCloseLogin, onEnter }) {
         <button
           type="button"
           onClick={onOpenLogin}
-          className="absolute bottom-8 right-6 flex h-16 w-36 items-center justify-center gap-3 rounded-lg border-[3px] border-[#1f9fff] bg-[#fbe7c6] text-2xl font-black text-[#9a5a1e] shadow-sm sm:right-12"
+          className="absolute bottom-8 right-6 flex h-16 w-36 items-center justify-center gap-3 rounded-lg bg-[#fbe7c6] text-2xl font-black text-[#9a5a1e] shadow-sm sm:right-12"
         >
           Login
           <Icon className="h-7 w-7" name="play" />
@@ -128,62 +140,26 @@ function LandingPage({ isLoginOpen, onOpenLogin, onCloseLogin, onEnter }) {
       <img src={florzinha} alt="" className="absolute right-24 top-52 h-14 w-14 object-contain" />
       <img src={florzinha} alt="" className="absolute right-4 top-72 h-13 w-13 object-contain" />
 
-      {isLoginOpen && <LoginModal onClose={onCloseLogin} onEnter={onEnter} />}
+      {authModal === "login" && (
+        <Login
+          onClose={onCloseAuth}
+          onLogin={onLogin}
+          onOpenCadastro={onOpenCadastro}
+          isLoading={isAuthLoading}
+          message={authMessage}
+        />
+      )}
+
+      {authModal === "cadastro" && (
+        <Cadastro
+          onClose={onCloseAuth}
+          onBackToLogin={onOpenLogin}
+          onCreate={onRegister}
+          isLoading={isAuthLoading}
+          message={authMessage}
+        />
+      )}
     </main>
-  )
-}
-
-function LoginModal({ onClose, onEnter }) {
-  function handleSubmit(event) {
-    event.preventDefault()
-    onEnter()
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="relative w-full max-w-[500px] rounded-2xl bg-white px-7 pb-7 pt-6 shadow-xl"
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-7 top-5 flex h-9 w-9 items-center justify-center text-black"
-          aria-label="Fechar login"
-        >
-          <Icon className="h-8 w-8" name="close" />
-        </button>
-
-        <h1 className="text-center text-3xl font-black text-[#9a5a1e]">Login</h1>
-
-        <label className="mt-5 block text-sm font-bold text-[#9a5a1e]" htmlFor="email">
-          E-mail:
-        </label>
-        <input
-          id="email"
-          type="email"
-          className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
-        />
-
-        <label className="mt-4 block text-sm font-bold text-[#9a5a1e]" htmlFor="password">
-          Senha:
-        </label>
-        <input
-          id="password"
-          type="password"
-          className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
-        />
-
-        <div className="mt-7 flex items-center justify-end gap-3">
-          <button type="button" className="text-lg font-black text-[#9a5a1e]">
-            Cadastrar
-          </button>
-          <button type="submit" className="rounded-full bg-[#fbe7c6] px-6 py-3 text-lg font-black text-[#9a5a1e]">
-            Entrar
-          </button>
-        </div>
-      </form>
-    </div>
   )
 }
 
@@ -309,7 +285,48 @@ function Dashboard() {
 
 function Home() {
   const [screen, setScreen] = useState("landing")
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [authModal, setAuthModal] = useState(null)
+  const [authMessage, setAuthMessage] = useState("")
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
+
+  function openAuthModal(modal) {
+    setAuthMessage("")
+    setAuthModal(modal)
+  }
+
+  async function handleLogin(credentials) {
+    try {
+      setIsAuthLoading(true)
+      setAuthMessage("")
+      const data = await login(credentials)
+      localStorage.setItem("accessToken", data.accessToken)
+      setAuthModal(null)
+      setScreen("dashboard")
+    } catch (error) {
+      setAuthMessage(error.message)
+    } finally {
+      setIsAuthLoading(false)
+    }
+  }
+
+  async function handleRegister(userData) {
+    try {
+      setIsAuthLoading(true)
+      setAuthMessage("")
+      await register(userData)
+      const data = await login({
+        email: userData.email,
+        senha: userData.senha,
+      })
+      localStorage.setItem("accessToken", data.accessToken)
+      setAuthModal(null)
+      setScreen("dashboard")
+    } catch (error) {
+      setAuthMessage(error.message)
+    } finally {
+      setIsAuthLoading(false)
+    }
+  }
 
   if (screen === "dashboard") {
     return <Dashboard />
@@ -317,10 +334,14 @@ function Home() {
 
   return (
     <LandingPage
-      isLoginOpen={isLoginOpen}
-      onOpenLogin={() => setIsLoginOpen(true)}
-      onCloseLogin={() => setIsLoginOpen(false)}
-      onEnter={() => setScreen("dashboard")}
+      authModal={authModal}
+      authMessage={authMessage}
+      isAuthLoading={isAuthLoading}
+      onOpenLogin={() => openAuthModal("login")}
+      onOpenCadastro={() => openAuthModal("cadastro")}
+      onCloseAuth={() => setAuthModal(null)}
+      onLogin={handleLogin}
+      onRegister={handleRegister}
     />
   )
 }
