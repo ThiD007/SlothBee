@@ -1,9 +1,13 @@
 import { Icon } from "./shared.jsx"
 
-function Login({ onClose, onEnter, onOpenCadastro }) {
+function Login({ onClose, onLogin, onOpenCadastro, isLoading = false, message = "" }) {
   function handleSubmit(event) {
     event.preventDefault()
-    onEnter()
+    const formData = new FormData(event.currentTarget)
+    onLogin({
+      email: formData.get("email"),
+      senha: formData.get("senha"),
+    })
   }
 
   return (
@@ -28,7 +32,9 @@ function Login({ onClose, onEnter, onOpenCadastro }) {
         </label>
         <input
           id="email"
+          name="email"
           type="email"
+          required
           className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
         />
 
@@ -37,16 +43,29 @@ function Login({ onClose, onEnter, onOpenCadastro }) {
         </label>
         <input
           id="password"
+          name="senha"
           type="password"
+          required
           className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
         />
 
+        {message && <p className="mt-4 text-sm font-bold text-[#9a5a1e]">{message}</p>}
+
         <div className="mt-7 flex items-center justify-end gap-3">
-          <button type="button" onClick={onOpenCadastro} className="text-lg font-black text-[#9a5a1e]">
+          <button
+            type="button"
+            onClick={onOpenCadastro}
+            className="text-lg font-black text-[#9a5a1e]"
+            disabled={isLoading}
+          >
             Cadastrar
           </button>
-          <button type="submit" className="rounded-full bg-[#fbe7c6] px-6 py-3 text-lg font-black text-[#9a5a1e]">
-            Entrar
+          <button
+            type="submit"
+            className="rounded-full bg-[#fbe7c6] px-6 py-3 text-lg font-black text-[#9a5a1e]"
+            disabled={isLoading}
+          >
+            {isLoading ? "Entrando..." : "Entrar"}
           </button>
         </div>
       </form>
