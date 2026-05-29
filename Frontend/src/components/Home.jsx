@@ -237,7 +237,7 @@ function Dashboard() {
             <img
               src={plantinhaImg}
               alt="Mascote SlothBee"
-              className="absolute bottom-[-38px] right-[2%] h-[320px] w-[360px] object-cover sm:right-[10%]"
+              className="absolute bottom-[-38px] right-[2%] h-[320px] w-[330px] object-cover sm:right-[10%]"
             />
           </section>
 
