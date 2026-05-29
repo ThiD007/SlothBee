@@ -28,7 +28,7 @@ function LandingPage({ onOpenLogin }) {
             <img
               src={plantinhaImg}
               alt="Mascote SlothBee"
-              className="absolute left-1/2 top-1/2 h-[min(78vw,390px)] w-[min(82vw,420px)] -translate-x-1/2 -translate-y-1/2 object-contain"
+              className="absolute left-1/2 top-1/2 h-[min(78vw,390px)] w-[min(82vw,420px)] -translate-x-1/2 -translate-y-1/2 object-cover"
             />
           </div>
         </section>

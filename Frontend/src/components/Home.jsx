@@ -55,7 +55,7 @@ function Logo({ className = "" }) {
 function HoneyPoints({ value, compact = false, variant = "default" }) {
   let cardStyles = "p-4"
   if (compact) cardStyles = "p-3"
-  if (variant === "tall") cardStyles = "h-full w-full py-5 px-7"
+  if (variant === "tall") cardStyles = "h-full w-full py-10 px-7"
   const bgStyles = variant === "tall" ? "bg-[#fbe7c6]" : "bg-white"
 
   return (
@@ -108,7 +108,7 @@ function LandingPage({ isLoginOpen, onOpenLogin, onCloseLogin, onEnter }) {
             <img
               src={plantinhaImg}
               alt="Mascote SlothBee"
-              className="absolute left-1/2 top-1/2 h-[min(78vw,390px)] w-[min(82vw,420px)] -translate-x-1/2 -translate-y-1/2 object-contain"
+              className="absolute left-1/2 top-1/2 h-[min(78vw,390px)] w-[min(82vw,400px)] -translate-x-1/2 -translate-y-1/2 object-cover"
             />
           </div>
         </section>
@@ -116,7 +116,7 @@ function LandingPage({ isLoginOpen, onOpenLogin, onCloseLogin, onEnter }) {
         <button
           type="button"
           onClick={onOpenLogin}
-          className="absolute bottom-8 right-6 flex h-16 w-36 items-center justify-center gap-3 rounded-lg border-[3px] border-[#1f9fff] bg-[#fbe7c6] text-2xl font-black text-[#9a5a1e] shadow-sm sm:right-12"
+          className="absolute bottom-8 right-6 flex h-16 w-36 items-center justify-center gap-3 rounded-lg border-[3px] border-[#7c47167a] bg-[#fbe7c6] text-2xl font-black text-[#9a5a1e] shadow-sm sm:right-12"
         >
           Login
           <Icon className="h-7 w-7" name="play" />
@@ -218,7 +218,7 @@ function Dashboard() {
               <img
                 src={mascoteAlmofadaImg}
                 alt="Mascote SlothBee"
-                className="h-15 w-15 rounded-md object-contain"
+                className="h-15 w-15 rounded-md object-cover"
               />
               <p className="text-[12px] font-bold leading-tight text-[#8a551f]">
                 Você está fazendo um ótimo trabalho, lembre-se de beber água.

@@ -21,7 +21,7 @@ function Perfil({ activePage, onNavigate }) {
             <img
               src={plantinhaImg}
               alt="Mascote SlothBee"
-              className="absolute bottom-[-18px] left-1/2 h-[210px] w-[230px] -translate-x-1/2 object-contain"
+              className="absolute bottom-[-18px] left-1/2 h-[210px] w-[230px] -translate-x-1/2 object-cover"
             />
           </section>
 
