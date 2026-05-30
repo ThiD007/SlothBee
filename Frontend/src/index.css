@@ -1,1 +1,88 @@
 @import "tailwindcss";
+
+.inicio-layout {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-areas:
+    "hero"
+    "side"
+    "balance"
+    "team"
+    "insights";
+  gap: 8px;
+  align-self: start;
+}
+
+.inicio-hero {
+  grid-area: hero;
+}
+
+.inicio-side {
+  grid-area: side;
+  grid-template-rows: 72px minmax(190px, auto);
+}
+
+.inicio-balance {
+  grid-area: balance;
+}
+
+.inicio-team {
+  grid-area: team;
+}
+
+.inicio-insights {
+  grid-area: insights;
+}
+
+.inicio-sun {
+  position: relative;
+  width: 65px;
+  height: 65px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #ffd984 0 22%, #fbb63d 62%, #ef9d22 100%);
+  box-shadow: 0 8px 18px rgba(220, 151, 40, 0.24);
+}
+
+.inicio-sun::before {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  background:
+    linear-gradient(#f3c04d, #f3c04d) 50% 0 / 2px 12px no-repeat,
+    linear-gradient(#f3c04d, #f3c04d) 50% 100% / 2px 12px no-repeat,
+    linear-gradient(90deg, #f3c04d, #f3c04d) 0 50% / 12px 2px no-repeat,
+    linear-gradient(90deg, #f3c04d, #f3c04d) 100% 50% / 12px 2px no-repeat,
+    linear-gradient(45deg, #f3c04d, #f3c04d) 14% 14% / 12px 2px no-repeat,
+    linear-gradient(135deg, #f3c04d, #f3c04d) 86% 14% / 12px 2px no-repeat,
+    linear-gradient(135deg, #f3c04d, #f3c04d) 14% 86% / 12px 2px no-repeat,
+    linear-gradient(45deg, #f3c04d, #f3c04d) 86% 86% / 12px 2px no-repeat;
+  opacity: 0.68;
+}
+
+@media (min-width: 768px) {
+  .inicio-layout {
+    grid-column: span 2;
+    grid-template-columns: minmax(0, 1fr) 210px;
+    grid-template-rows: minmax(210px, 250px) 96px 96px;
+    grid-template-areas:
+      "hero side"
+      "balance side"
+      "team team"
+      "insights insights";
+  }
+
+  .inicio-hero {
+    min-height: 0;
+  }
+
+  .inicio-side {
+    grid-template-rows: 72px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .inicio-layout {
+    grid-template-columns: minmax(0, 1fr) 230px;
+  }
+}

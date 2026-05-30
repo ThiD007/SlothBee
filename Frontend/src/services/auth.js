@@ -31,3 +31,11 @@ export function register({ nome, email, senha }) {
     body: JSON.stringify({ nome, email, senha }),
   })
 }
+
+export function getCurrentUser(accessToken) {
+  return request("/users/me", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+}

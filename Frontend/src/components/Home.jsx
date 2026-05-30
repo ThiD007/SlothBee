@@ -1,5 +1,10 @@
 import { useState } from "react"
 import { login, register } from "../services/auth.js"
+import AdminBlog from "./AdminBlog.jsx"
+import AdminEquipes from "./AdminEquipes.jsx"
+import AdminGraficoEquipe from "./AdminGraficoEquipe.jsx"
+import AdminHome from "./AdminHome.jsx"
+import AdminMetas from "./AdminMetas.jsx"
 import Blog from "./Blog.jsx"
 import Cadastro from "./Cadastro.jsx"
 import Inicio from "./inicio.jsx"
@@ -8,13 +13,31 @@ import Login from "./Login.jsx"
 import Metas from "./Metas.jsx"
 import Perfil from "./Perfil.jsx"
 
+const adminPages = new Set(["admin-inicio", "admin-equipes", "admin-grafico", "admin-metas", "admin-blog"])
+
+function getInitialPage() {
+  const hashPage = window.location.hash.replace("#", "")
+  if (hashPage === "admin") return "admin-inicio"
+  if (adminPages.has(hashPage)) return hashPage
+  return localStorage.getItem("accessToken") ? "inicio" : "landing"
+}
+
 function Home() {
-  const [activePage, setActivePage] = useState(() =>
-    localStorage.getItem("accessToken") ? "inicio" : "landing",
-  )
+  const [activePage, setActivePage] = useState(getInitialPage)
   const [authModal, setAuthModal] = useState(null)
   const [authMessage, setAuthMessage] = useState("")
   const [isAuthLoading, setIsAuthLoading] = useState(false)
+
+  function handleNavigate(page) {
+    setActivePage(page)
+    if (adminPages.has(page)) {
+      window.location.hash = page
+      return
+    }
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search)
+    }
+  }
 
   function openAuthModal(modal) {
     setAuthMessage("")
@@ -28,7 +51,7 @@ function Home() {
       const data = await login(credentials)
       localStorage.setItem("accessToken", data.accessToken)
       setAuthModal(null)
-      setActivePage("inicio")
+      handleNavigate("inicio")
     } catch (error) {
       setAuthMessage(error.message)
     } finally {
@@ -47,7 +70,7 @@ function Home() {
       })
       localStorage.setItem("accessToken", data.accessToken)
       setAuthModal(null)
-      setActivePage("inicio")
+      handleNavigate("inicio")
     } catch (error) {
       setAuthMessage(error.message)
     } finally {
@@ -85,8 +108,14 @@ function Home() {
 
   const pageProps = {
     activePage,
-    onNavigate: setActivePage,
+    onNavigate: handleNavigate,
   }
+
+  if (activePage === "admin-inicio") return <AdminHome {...pageProps} />
+  if (activePage === "admin-equipes") return <AdminEquipes {...pageProps} />
+  if (activePage === "admin-grafico") return <AdminGraficoEquipe {...pageProps} />
+  if (activePage === "admin-metas") return <AdminMetas {...pageProps} />
+  if (activePage === "admin-blog") return <AdminBlog {...pageProps} />
 
   if (activePage === "perfil") return <Perfil {...pageProps} />
   if (activePage === "metas") return <Metas {...pageProps} />

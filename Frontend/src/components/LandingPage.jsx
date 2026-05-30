@@ -13,6 +13,13 @@ function LandingPage({ onOpenLogin }) {
           </p>
         </header>
 
+        <img src={florzinha} alt="" className="absolute right-260 top-15 h-20 w-20 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-250 top-36 h-12 w-12 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-270 top-52 h-14 w-15 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-250 top-72 h-15 w-15 object-cover " />
+      <img src={florzinha} alt="" className="absolute right-265 top-90 h-20 w-20 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-257 top-118 h-20 w-17 object-cover" />
+
         <section className="grid flex-1 items-center gap-8 py-8 md:grid-cols-[minmax(240px,360px)_1fr] md:py-6">
           <article className="rounded-md border border-[#d7d0c5] bg-white/70 px-5 py-5 text-[13px] font-black leading-tight text-[#9a5a1e] shadow-sm md:ml-24">
             Bem-vindo ao SlothBee! Temos soluções inovadoras de bem-estar digital focada na rotina, que
@@ -28,7 +35,7 @@ function LandingPage({ onOpenLogin }) {
             <img
               src={plantinhaImg}
               alt="Mascote SlothBee"
-              className="absolute left-1/2 top-1/2 h-[min(78vw,390px)] w-[min(82vw,420px)] -translate-x-1/2 -translate-y-1/2 object-cover"
+              className="absolute left-1/2 top-1/2 h-[min(78vw,440px)] w-[min(82vw,420px)] -translate-x-1/2 -translate-y-1/2 object-cover"
             />
           </div>
         </section>
@@ -36,17 +43,17 @@ function LandingPage({ onOpenLogin }) {
         <button
           type="button"
           onClick={onOpenLogin}
-          className="absolute bottom-8 right-6 flex h-16 w-36 items-center justify-center gap-3 rounded-lg border-[3px] border-[#1f9fff] bg-[#fbe7c6] text-2xl font-black text-[#9a5a1e] shadow-sm sm:right-12"
+          className="absolute bottom-8 right-6 flex h-16 w-36 items-center justify-center gap-3 rounded-lg border-[3px] border-[#9a5a1ea6] bg-[#fbe7c6] text-2xl font-black text-[#9a5a1e] shadow-sm sm:right-12"
         >
           Login
           <Icon className="h-7 w-7" name="play" />
         </button>
       </div>
 
-      <img src={florzinha} alt="" className="absolute right-16 top-8 h-20 w-20 object-contain" />
-      <img src={florzinha} alt="" className="absolute right-7 top-36 h-12 w-12 object-contain" />
-      <img src={florzinha} alt="" className="absolute right-24 top-52 h-14 w-14 object-contain" />
-      <img src={florzinha} alt="" className="absolute right-4 top-72 h-13 w-13 object-contain" />
+      <img src={florzinha} alt="" className="absolute right-16 top-8 h-20 w-20 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-7 top-36 h-12 w-12 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-24 top-52 h-14 w-14 object-cover" />
+      <img src={florzinha} alt="" className="absolute right-4 top-72 h-15 w-15 object-cover" />
     </main>
   )
 }

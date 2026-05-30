@@ -1,5 +1,5 @@
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
-import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
+import { AppFrame, HoneyPoints } from "./shared.jsx"
 
 const dailyGoals = [
   { text: "Beber 2 copos de água", points: 50, done: true },
@@ -42,22 +42,9 @@ function GoalGroup({ title, goals }) {
         ))}
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
-        <button
-          type="button"
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-sm bg-[#b3c843] px-4 text-[12px] font-black text-[#795719]"
-        >
-          Adicionar meta
-          <Icon className="h-4 w-4" name="plus" />
-        </button>
-        <button
-          type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-sm bg-[#8d5a27] text-white"
-          aria-label="Excluir meta"
-        >
-          <Icon className="h-4 w-4" name="trash" />
-        </button>
-      </div>
+      <p className="mt-5 rounded-sm bg-[#f7f3e8] px-3 py-2 text-[12px] font-black text-[#8a551f]">
+        Metas enviadas pelo administrador.
+      </p>
     </section>
   )
 }

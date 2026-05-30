@@ -8,7 +8,14 @@ const menuItems = [
   { icon: "profile", label: "Perfil", page: "perfil" },
   { icon: "goals", label: "Metas", page: "metas" },
   { icon: "blog", label: "Blog", page: "blog" },
-  { icon: "team", label: "Equipe", page: "equipe" },
+]
+
+const adminMenuItems = [
+  { icon: "home", label: "Inicio", page: "admin-inicio" },
+  { icon: "team", label: "Equipes", page: "admin-equipes" },
+  { icon: "chart", label: "Grafico", page: "admin-grafico" },
+  { icon: "goals", label: "Metas", page: "admin-metas" },
+  { icon: "blog", label: "Blog", page: "admin-blog" },
 ]
 
 export function Icon({ name, className = "" }) {
@@ -38,6 +45,9 @@ export function Icon({ name, className = "" }) {
     team: (
       <path d="M6.2 1.8h3.6l1.8 3.1-1.8 3.1H6.2L4.4 4.9l1.8-3.1Zm.7 1.2-1.1 1.9 1.1 1.9h2.2l1.1-1.9L9.1 3H6.9ZM2.8 8.5h3l1.5 2.6-1.5 2.6h-3l-1.5-2.6 1.5-2.6Zm6.9 0h3l1.5 2.6-1.5 2.6h-3l-1.5-2.6 1.5-2.6Z" />
     ),
+    chart: (
+      <path d="M2.2 13.2h11.6v1H2.2v-1Zm1.1-4.4h2.2v3.4H3.3V8.8Zm3.6-5.2h2.2v8.6H6.9V3.6Zm3.6 3.2h2.2v5.4h-2.2V6.8Z" />
+    ),
     plus: <path d="M7.4 2h1.2v5.4H14v1.2H8.6V14H7.4V8.6H2V7.4h5.4V2Z" />,
     trash: (
       <path d="M6.2 1.6h3.6l.5 1.2h3v1.1H2.7V2.8h3l.5-1.2Zm.7 1.2h2.2L8.9 2.6H7.1l-.2.2Zm-2.8 2h7.8l-.6 9.2H4.7l-.6-9.2Zm1.2 1 .4 7.1h4.6l.4-7.1H5.3Zm1.4 1.1h1v4.8h-1V6.9Zm1.6 0h1v4.8h-1V6.9Z" />
@@ -64,19 +74,19 @@ export function Logo({ className = "" }) {
   )
 }
 
-export function HoneyPoints({ value, compact = false, variant = "default" }) {
+export function HoneyPoints({ value, label = "Pontos de Mel", compact = false, variant = "default", className = "" }) {
   let cardStyles = "p-4"
   if (compact) cardStyles = "p-3"
   if (variant === "tall") cardStyles = "h-full w-full py-5 px-7"
   const bgStyles = variant === "tall" ? "bg-[#fbe7c6]" : "bg-white"
 
   return (
-    <section className={`rounded-lg ${bgStyles} ${cardStyles} shadow-sm transition-all`}>
+    <section className={`rounded-lg ${bgStyles} ${cardStyles} shadow-sm transition-all ${className}`}>
       <div className="flex items-center justify-center gap-3">
         <img src={florzinha} alt="Florzinha" className="h-10 w-10 object-cover" />
         <div className="text-center leading-tight">
           <strong className="block text-base font-black text-[#2f261d]">{value}</strong>
-          <span className="text-[12px] font-bold text-[#8a551f]">Pontos de Mel</span>
+          <span className="text-[12px] font-bold text-[#8a551f]">{label}</span>
         </div>
       </div>
     </section>
@@ -96,13 +106,13 @@ export function ProgressBar({ left, right }) {
 
 export function Sidebar({ activePage, onNavigate }) {
   return (
-    <aside className="flex flex-col bg-white px-5 py-5 rounded-none lg:min-h-screen">
+    <aside className="hidden flex-col rounded-none bg-white px-5 py-5 md:flex md:min-h-screen">
       <Logo />
-      <p className="mt-3 max-w-[150px] text-[13px] font-bold leading-tight text-[#658a30]">
+      <p className="mt-3 max-w-[150px] text-[14px] font-bold leading-tight text-[#658a30]">
         Foque, descanse, seja sua melhor versão!
       </p>
 
-      <nav className="mt-8 flex flex-wrap gap-3 lg:block lg:space-y-3">
+      <nav className="mt-8 flex flex-wrap gap-3 md:block md:space-y-3">
         {menuItems.map((item) => {
           const isActive = activePage === item.page
           return (
@@ -110,14 +120,14 @@ export function Sidebar({ activePage, onNavigate }) {
               key={item.label}
               type="button"
               onClick={() => onNavigate(item.page)}
-              className={`flex h-8 min-w-32 items-center gap-2 rounded-lg px-3 text-left text-[14px] font-bold transition-colors lg:w-full ${
+              className={`flex h-8 min-w-32 items-center gap-2 rounded-lg px-3 text-left text-[14px] font-bold transition-colors md:w-full ${
                 isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : "text-[#765126] hover:bg-[#fcfbf9]"
               }`}
             >
               {item.icon === "team" ? (
-                <img src={colmeiaSimboloImg} alt="" className="h-5 w-5 object-contain" />
+                <img src={colmeiaSimboloImg} alt="" className="h-7 w-7 object-cover" />
               ) : (
-                <Icon className="h-5 w-5 text-[#a36922]" name={item.icon} />
+                <Icon className="h-6 w-6 text-[#a36922]" name={item.icon} />
               )}
               {item.label}
             </button>
@@ -127,10 +137,10 @@ export function Sidebar({ activePage, onNavigate }) {
 
       <div className="mt-4 h-px bg-[#ded1ab]" />
 
-      <div className="mt-6 rounded-lg bg-[#f5f4f3] p-2.5 lg:mt-auto">
+      <div className="mt-6 rounded-lg bg-[#f5f4f3] p-2.5 md:mt-auto">
         <div className="flex items-center gap-2">
-          <img src={mascoteAlmofadaImg} alt="Mascote SlothBee" className="h-15 w-15 rounded-md object-contain" />
-          <p className="text-[12px] font-bold leading-tight text-[#8a551f]">
+          <img src={mascoteAlmofadaImg} alt="Mascote SlothBee" className="h-15 w-15 rounded-md object-cover" />
+          <p className="text-[12px] font-extrabold leading-tight text-[#8a551f]">
             Você está fazendo um ótimo trabalho, lembre-se de beber água.
           </p>
         </div>
@@ -139,15 +149,130 @@ export function Sidebar({ activePage, onNavigate }) {
   )
 }
 
-export function AppFrame({ activePage, onNavigate, children, rightColumn }) {
+export function AdminSidebar({ activePage, onNavigate }) {
   return (
-   <main className="min-h-screen bg-[#e9e9e9] p-2 font-sans text-[#5c3717] lg:pl-0 lg:py-2 lg:pr-2">
-      {/* Ajustamos o gap e o alinhamento da grid principal */}
-      <div className="grid w-full gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-cols-[220px_minmax(0,1fr)_220px] xl:grid-cols-[260px_minmax(0,1fr)_250px]">
+    <aside className="hidden flex-col rounded-none bg-white px-5 py-5 md:flex md:min-h-screen">
+      <Logo />
+      <p className="mt-3 max-w-[150px] text-[14px] font-bold leading-tight text-[#658a30]">
+        Painel visual para cuidar das equipes.
+      </p>
+
+      <nav className="mt-8 flex flex-wrap gap-3 md:block md:space-y-3">
+        {adminMenuItems.map((item) => {
+          const isActive = activePage === item.page
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => onNavigate(item.page)}
+              className={`flex h-8 min-w-32 items-center gap-2 rounded-lg px-3 text-left text-[14px] font-bold transition-colors md:w-full ${
+                isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : "text-[#765126] hover:bg-[#fcfbf9]"
+              }`}
+            >
+              {item.icon === "team" ? (
+                <img src={colmeiaSimboloImg} alt="" className="h-7 w-7 object-cover" />
+              ) : (
+                <Icon className="h-6 w-6 text-[#a36922]" name={item.icon} />
+              )}
+              {item.label}
+            </button>
+          )
+        })}
+      </nav>
+
+      <div className="mt-4 h-px bg-[#ded1ab]" />
+
+      <div className="mt-6 rounded-lg bg-[#f5f4f3] p-2.5 md:mt-auto">
+        <div className="flex items-center gap-2">
+          <img src={mascoteAlmofadaImg} alt="Mascote SlothBee" className="h-15 w-15 rounded-md object-cover" />
+          <p className="text-[12px] font-extrabold leading-tight text-[#8a551f]">
+            Area administrativa separada para metas, equipes e blog.
+          </p>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+function MobileTopBar({ admin = false }) {
+  return (
+    <header className="sticky top-0 z-30 mb-2 flex items-center justify-between gap-3 rounded-b-lg bg-white px-4 py-3 shadow-sm md:hidden">
+      <div className="min-w-0">
+        <Logo />
+        <p className="mt-1 text-[10px] font-black leading-tight text-[#658a30]">
+          {admin ? "Painel visual do administrador." : "Foque, descanse, seja sua melhor versão!"}
+        </p>
+      </div>
+      {admin ? (
+        <span className="rounded-lg bg-[#fbe7c6] px-3 py-2 text-center text-[11px] font-black text-[#8a551f]">
+          Admin
+        </span>
+      ) : (
+        <HoneyPoints value="250" compact className="shrink-0 px-2 py-2 [&_img]:h-7 [&_img]:w-7 [&_strong]:text-sm [&_span]:text-[10px]" />
+      )}
+    </header>
+  )
+}
+
+function MobileNav({ activePage, onNavigate, admin = false }) {
+  const items = admin ? adminMenuItems : menuItems
+  const gridClass = admin ? "grid-cols-5" : "grid-cols-4"
+
+  return (
+    <nav
+      className={`fixed inset-x-0 bottom-0 z-40 grid ${gridClass} gap-1 border-t border-[#e4d6b7] bg-white px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] md:hidden`}
+    >
+      {items.map((item) => {
+        const isActive = activePage === item.page
+        return (
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => onNavigate(item.page)}
+            className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-black leading-none ${
+              isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : "text-[#765126]"
+            }`}
+          >
+            {item.icon === "team" ? (
+              <img src={colmeiaSimboloImg} alt="" className="h-5 w-5 object-cover" />
+            ) : (
+              <Icon className="h-5 w-5 text-[#a36922]" name={item.icon} />
+            )}
+            <span>{item.label}</span>
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
+export function AppFrame({ activePage, onNavigate, children, rightColumn, bare = false }) {
+  if (bare) {
+    return <main className="min-h-screen bg-[#e9e9e9] p-2 font-sans text-[#5c3717]">{children}</main>
+  }
+
+  return (
+    <main className="min-h-screen bg-[#e9e9e9] p-2 pb-24 font-sans text-[#5c3717] md:py-2 md:pl-0 md:pr-2 md:pb-2">
+      <MobileTopBar />
+      <div className="grid w-full gap-3 md:min-h-[calc(100vh-1rem)] md:grid-cols-[220px_minmax(0,1fr)_220px] xl:grid-cols-[260px_minmax(0,1fr)_250px]">
         <Sidebar activePage={activePage} onNavigate={onNavigate} />
         {children}
         {rightColumn}
       </div>
+      <MobileNav activePage={activePage} onNavigate={onNavigate} />
+    </main>
+  )
+}
+
+export function AdminFrame({ activePage, onNavigate, children }) {
+  return (
+    <main className="min-h-screen bg-[#e9e9e9] p-2 pb-24 font-sans text-[#5c3717] md:py-2 md:pl-0 md:pr-2 md:pb-2">
+      <MobileTopBar admin />
+      <div className="grid w-full gap-3 md:min-h-[calc(100vh-1rem)] md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
+        <AdminSidebar activePage={activePage} onNavigate={onNavigate} />
+        {children}
+      </div>
+      <MobileNav activePage={activePage} onNavigate={onNavigate} admin />
     </main>
   )
 }
