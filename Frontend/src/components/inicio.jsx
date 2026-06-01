@@ -4,6 +4,7 @@ import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { getHoneyPoints } from "../services/points.js"
 import { finishTimer, getActiveTimer, startTimer } from "../services/timer.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
 
@@ -33,6 +34,7 @@ function Inicio({ activePage, onNavigate }) {
   const [now, setNow] = useState(0)
   const [timerMessage, setTimerMessage] = useState("")
   const [isTimerLoading, setIsTimerLoading] = useState(false)
+  const [honeyPoints, setHoneyPoints] = useState(0)
 
   useEffect(() => {
     let ignore = false
@@ -41,6 +43,8 @@ function Inicio({ activePage, onNavigate }) {
       try {
         const data = await getActiveTimer()
         if (!ignore) setTimer(data.timer)
+        const pointsData = await getHoneyPoints()
+        if (!ignore) setHoneyPoints(pointsData.honeyPoints)
       } catch (error) {
         if (!ignore) setTimerMessage(error.message)
       }
@@ -87,6 +91,7 @@ function Inicio({ activePage, onNavigate }) {
         setIsTimerLoading(true)
         const data = await finishTimer(timer.id)
         setTimer(data.timer)
+        setHoneyPoints(data.honeyPoints)
         setTimerMessage("Sessao de foco finalizada")
         window.alert("Tempo finalizado! Hora de descansar.")
       } catch (error) {
@@ -124,7 +129,11 @@ function Inicio({ activePage, onNavigate }) {
       setTimerMessage("")
       const data = await finishTimer(timer.id)
       setTimer(data.timer)
+      setHoneyPoints(data.honeyPoints)
       setTimerMessage("Sessao de foco finalizada")
+      if (data.earnedHoneyPoints > 0) {
+        setTimerMessage(`Sessao finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
+      }
     } catch (error) {
       setTimerMessage(error.message)
     } finally {
@@ -155,7 +164,7 @@ function Inicio({ activePage, onNavigate }) {
 
         <aside className="inicio-side grid gap-2">
           <HoneyPoints
-            value="250"
+            value={honeyPoints}
             compact
             className="flex h-full items-center justify-center [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
           />
@@ -280,7 +289,7 @@ function Inicio({ activePage, onNavigate }) {
             </div>
 
             <HoneyPoints
-              value="500"
+              value={honeyPoints}
               variant="tall"
               className="self-center py-3 sm:h-[70px] [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
             />

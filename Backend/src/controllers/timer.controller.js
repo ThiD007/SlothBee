@@ -1,4 +1,7 @@
 const repo = require("../repositories/timer.repo");
+const pointsRepo = require("../repositories/points.repo");
+
+const HONEY_POINTS_PER_FOCUS_HOUR = 60;
 
 function buildTimerResponse(session) {
   if (!session) return null;
@@ -73,12 +76,25 @@ async function finish(req, res, next) {
     const session = await repo.findByIdAndUserId(req.params.id, req.user.id);
     if (!session) return res.status(404).json({ message: "Sessao nao encontrada" });
 
+    let earnedHoneyPoints = 0;
+
     if (session.status === "active") {
       await repo.finishSession(session.id, req.user.id);
     }
 
     const finishedSession = await repo.findByIdAndUserId(session.id, req.user.id);
-    res.json({ timer: buildTimerResponse(finishedSession) });
+    const timer = buildTimerResponse(finishedSession);
+
+    if (session.status === "active") {
+      earnedHoneyPoints = Math.floor(timer.elapsedSeconds / 3600) * HONEY_POINTS_PER_FOCUS_HOUR;
+      if (earnedHoneyPoints > 0) {
+        await pointsRepo.addHoneyPoints(req.user.id, earnedHoneyPoints);
+      }
+    }
+
+    const honeyPoints = await pointsRepo.getHoneyPoints(req.user.id);
+
+    res.json({ timer, honeyPoints, earnedHoneyPoints });
   } catch (e) {
     next(e);
   }
