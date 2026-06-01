@@ -6,17 +6,18 @@ async function register(req, res, next) {
   try {
     const { nome, name, email, telefone, cargo, senha, password } = req.body;
     const userName = nome || name;
+    const userEmail = String(email || "").trim().toLowerCase();
     const plainPassword = senha || password;
 
-    if (!userName || !email || !telefone || !cargo || !plainPassword) {
+    if (!userName || !userEmail || !telefone || !cargo || !plainPassword) {
       return res.status(400).json({ message: "Nome, e-mail, telefone, cargo e senha sao obrigatorios" });
     }
 
-    const exists = await repo.findByEmail(email);
+    const exists = await repo.findByEmail(userEmail);
     if (exists) return res.status(409).json({ message: "E-mail já cadastrado" });
 
     const hash = await hashPassword(plainPassword);
-    await repo.createUser(userName, email, hash, telefone, cargo);
+    await repo.createUser(userName, userEmail, hash, telefone, cargo);
     res.status(201).json({ message: "Usuário criado" });
   } catch (e) { next(e); }
 }
@@ -24,13 +25,14 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   try {
     const { email, senha, password } = req.body;
+    const userEmail = String(email || "").trim().toLowerCase();
     const plainPassword = senha || password;
 
-    if (!email || !plainPassword) {
+    if (!userEmail || !plainPassword) {
       return res.status(400).json({ message: "E-mail e senha sao obrigatorios" });
     }
 
-    const user = await repo.findByEmail(email);
+    const user = await repo.findByEmail(userEmail);
     if (!user) return res.status(401).json({ message: "Credenciais inválidas" });
 
     const ok = await comparePassword(plainPassword, user.password_hash);

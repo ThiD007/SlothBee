@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .inicio-layout {
   display: grid;
   grid-column: 1 / -1;

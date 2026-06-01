@@ -1,10 +1,10 @@
 const db = require("../config/db");
 
 const defaultSelfcareGoals = [
-  ["Checar postura no foco", 50],
-  ["Fazer pausas conscientes", 25],
-  ["Alongar o corpo", 20],
-  ["Modo sem tela", 30],
+  ["Checar postura no foco", 15],
+  ["Fazer pausas conscientes", 15],
+  ["Alongar o corpo", 15],
+  ["Modo sem tela", 15],
   ["Cuidar do humor", 15],
 ];
 

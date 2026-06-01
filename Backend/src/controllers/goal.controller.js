@@ -1,11 +1,13 @@
 const goalRepo = require("../repositories/goal.repo");
 const pointsRepo = require("../repositories/points.repo");
 
+const GOAL_POINTS = 15;
+
 function normalizeGoal(goal) {
   return {
     id: goal.id,
     text: goal.titulo,
-    points: goal.pontos,
+    points: GOAL_POINTS,
     type: goal.tipo,
     done: Boolean(goal.done),
   };
@@ -41,7 +43,7 @@ async function toggle(req, res, next) {
     if (!goal) return res.status(404).json({ message: "Meta nao encontrada" });
 
     const completion = await goalRepo.findCompletion(goal.id, req.user.id);
-    const pointsDelta = completion ? -goal.pontos : goal.pontos;
+    const pointsDelta = completion ? -GOAL_POINTS : GOAL_POINTS;
 
     if (completion) {
       await goalRepo.uncompleteGoal(goal.id, req.user.id);
@@ -62,7 +64,7 @@ async function toggle(req, res, next) {
 
 async function createSelfcare(req, res, next) {
   try {
-    const input = validateGoalInput(req.body.titulo || req.body.text, req.body.pontos || req.body.points);
+    const input = validateGoalInput(req.body.titulo || req.body.text, GOAL_POINTS);
     if (input.error) return res.status(400).json({ message: input.error });
 
     const id = await goalRepo.createSelfcareGoal(req.user.id, input.titulo, input.pontos);
@@ -74,7 +76,7 @@ async function createSelfcare(req, res, next) {
 
 async function updateSelfcare(req, res, next) {
   try {
-    const input = validateGoalInput(req.body.titulo || req.body.text, req.body.pontos || req.body.points);
+    const input = validateGoalInput(req.body.titulo || req.body.text, GOAL_POINTS);
     if (input.error) return res.status(400).json({ message: input.error });
 
     await goalRepo.updateSelfcareGoal(req.params.id, req.user.id, input.titulo, input.pontos);
@@ -104,7 +106,7 @@ async function adminListToday(req, res, next) {
 
 async function adminCreateToday(req, res, next) {
   try {
-    const input = validateGoalInput(req.body.titulo || req.body.text, req.body.pontos || req.body.points);
+    const input = validateGoalInput(req.body.titulo || req.body.text, GOAL_POINTS);
     if (input.error) return res.status(400).json({ message: input.error });
 
     const id = await goalRepo.createTodayGoal(input.titulo, input.pontos);
@@ -116,7 +118,7 @@ async function adminCreateToday(req, res, next) {
 
 async function adminUpdateToday(req, res, next) {
   try {
-    const input = validateGoalInput(req.body.titulo || req.body.text, req.body.pontos || req.body.points);
+    const input = validateGoalInput(req.body.titulo || req.body.text, GOAL_POINTS);
     if (input.error) return res.status(400).json({ message: input.error });
 
     await goalRepo.updateTodayGoal(req.params.id, input.titulo, input.pontos);

@@ -1,4 +1,4 @@
-import { API_URL } from "./auth.js";
+import { API_URL, createApiError } from "./auth.js";
 
 async function request(path, options = {}) {
   const accessToken = localStorage.getItem("accessToken");
@@ -15,7 +15,7 @@ async function request(path, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.message || "Erro ao conectar com o servidor");
+    throw createApiError(response, data, "Erro ao conectar com o servidor");
   }
 
   return data;

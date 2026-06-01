@@ -31,7 +31,7 @@ function Cadastro({ onClose, onBackToLogin, onCreate, isLoading = false, message
         <h1 className="text-center text-3xl font-black text-[#9a5a1e]">Cadastro</h1>
 
         <label className="mt-5 block text-sm font-bold text-[#9a5a1e]" htmlFor="name">
-          Nome:
+          Nome Completo:
         </label>
         <input
           id="name"
