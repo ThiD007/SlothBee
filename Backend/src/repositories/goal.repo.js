@@ -38,8 +38,8 @@ async function listGoalsForUser(userId) {
        m.tipo,
        CASE WHEN c.id IS NULL THEN 0 ELSE 1 END AS done
      FROM metas m
-     LEFT JOIN meta_conclusoes c
-       ON c.meta_id = m.id AND c.usuario_id = ? AND c.completed_on = CURDATE()
+     LEFT JOIN metas_concluidas c
+       ON c.meta_id = m.id AND c.usuario_id = ? AND c.concluida_em = CURDATE()
      WHERE m.active = 1
        AND (m.tipo = 'today' OR (m.tipo = 'selfcare' AND m.usuario_id = ?))
      ORDER BY m.tipo, m.id`,
@@ -109,7 +109,7 @@ async function findGoalForUser(id, userId) {
 
 async function findCompletion(goalId, userId) {
   const [rows] = await db.query(
-    "SELECT id FROM meta_conclusoes WHERE meta_id = ? AND usuario_id = ? AND completed_on = CURDATE()",
+    "SELECT id FROM metas_concluidas WHERE meta_id = ? AND usuario_id = ? AND concluida_em = CURDATE()",
     [goalId, userId]
   );
 
@@ -117,14 +117,14 @@ async function findCompletion(goalId, userId) {
 }
 
 async function completeGoal(goalId, userId) {
-  await db.query("INSERT INTO meta_conclusoes (meta_id, usuario_id, completed_on) VALUES (?, ?, CURDATE())", [
+  await db.query("INSERT INTO metas_concluidas (meta_id, usuario_id, concluida_em) VALUES (?, ?, CURDATE())", [
     goalId,
     userId,
   ]);
 }
 
 async function uncompleteGoal(goalId, userId) {
-  await db.query("DELETE FROM meta_conclusoes WHERE meta_id = ? AND usuario_id = ? AND completed_on = CURDATE()", [
+  await db.query("DELETE FROM metas_concluidas WHERE meta_id = ? AND usuario_id = ? AND concluida_em = CURDATE()", [
     goalId,
     userId,
   ]);

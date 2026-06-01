@@ -1,14 +1,14 @@
-CREATE TABLE IF NOT EXISTS `sessoes_foco` (
+CREATE TABLE IF NOT EXISTS `cronometros` (
   `id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
-  `mode` enum('stopwatch','countdown') NOT NULL DEFAULT 'stopwatch',
-  `duration_seconds` int DEFAULT NULL,
-  `started_at` datetime NOT NULL,
-  `ended_at` datetime DEFAULT NULL,
-  `status` enum('active','finished') NOT NULL DEFAULT 'active',
+  `modo` enum('cronometro','contagem_regressiva') NOT NULL DEFAULT 'cronometro',
+  `duracao_segundos` int DEFAULT NULL,
+  `iniciado_em` datetime NOT NULL,
+  `finalizado_em` datetime DEFAULT NULL,
+  `status` enum('ativo','finalizado') NOT NULL DEFAULT 'ativo',
   PRIMARY KEY (`id`),
-  KEY `idx_sessoes_foco_usuario_status` (`usuario_id`, `status`),
-  CONSTRAINT `fk_sessoes_foco_usuario`
+  KEY `idx_cronometros_usuario_status` (`usuario_id`, `status`),
+  CONSTRAINT `fk_cronometros_usuario`
     FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
     ON DELETE CASCADE
 );

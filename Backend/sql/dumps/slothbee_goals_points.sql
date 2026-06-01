@@ -18,19 +18,19 @@ CREATE TABLE IF NOT EXISTS `metas` (
     ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS `meta_conclusoes` (
+CREATE TABLE IF NOT EXISTS `metas_concluidas` (
   `id` int NOT NULL AUTO_INCREMENT,
   `meta_id` int NOT NULL,
   `usuario_id` int NOT NULL,
-  `completed_on` date NOT NULL,
-  `completed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `concluida_em` date NOT NULL,
+  `registrado_em` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_meta_usuario_dia` (`meta_id`, `usuario_id`, `completed_on`),
-  KEY `idx_conclusoes_usuario_dia` (`usuario_id`, `completed_on`),
-  CONSTRAINT `fk_conclusoes_meta`
+  UNIQUE KEY `uniq_meta_usuario_dia` (`meta_id`, `usuario_id`, `concluida_em`),
+  KEY `idx_metas_concluidas_usuario_dia` (`usuario_id`, `concluida_em`),
+  CONSTRAINT `fk_metas_concluidas_meta`
     FOREIGN KEY (`meta_id`) REFERENCES `metas` (`id`)
     ON DELETE CASCADE,
-  CONSTRAINT `fk_conclusoes_usuario`
+  CONSTRAINT `fk_metas_concluidas_usuario`
     FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
     ON DELETE CASCADE
 );
