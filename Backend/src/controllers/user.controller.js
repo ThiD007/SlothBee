@@ -1,20 +1,6 @@
 const repo = require("../repositories/user.repo");
 const { hashPassword } = require("../utils/password");
-const fs = require("fs");
-const path = require("path");
-
-const profileUploadDir = path.join(__dirname, "../../uploads/profile");
-
-function deleteProfilePhotoFile(foto_perfil) {
-  if (!foto_perfil) return;
-
-  const fileName = path.basename(foto_perfil);
-  const filePath = path.join(profileUploadDir, fileName);
-
-  if (filePath.startsWith(profileUploadDir) && fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
-}
+const { uploadProfilePhoto, deleteProfilePhoto } = require("../utils/cloudinary");
 
 async function me(req, res, next) {
   try {
@@ -52,11 +38,8 @@ async function updatePhoto(req, res, next) {
       return res.status(400).json({ message: "Imagem do perfil e obrigatoria" });
     }
 
-    const currentUser = await repo.findById(req.user.id);
-    deleteProfilePhotoFile(currentUser?.foto_perfil);
-
-    const foto_perfil = `/uploads/profile/${req.file.filename}`;
-    await repo.userPhotoUpdate(req.user.id, foto_perfil);
+    const upload = await uploadProfilePhoto(req.file, req.user.id);
+    await repo.userPhotoUpdate(req.user.id, upload.secure_url);
 
     const user = await repo.findById(req.user.id);
     res.json(user);
@@ -67,9 +50,7 @@ async function updatePhoto(req, res, next) {
 
 async function removePhoto(req, res, next) {
   try {
-    const currentUser = await repo.findById(req.user.id);
-    deleteProfilePhotoFile(currentUser?.foto_perfil);
-
+    await deleteProfilePhoto(req.user.id);
     await repo.userPhotoUpdate(req.user.id, null);
 
     const user = await repo.findById(req.user.id);

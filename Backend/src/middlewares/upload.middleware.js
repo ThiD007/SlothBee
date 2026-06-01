@@ -1,24 +1,7 @@
-const fs = require("fs");
-const path = require("path");
 const multer = require("multer");
 
-const profileUploadDir = path.join(__dirname, "../../uploads/profile");
-
-fs.mkdirSync(profileUploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, profileUploadDir);
-  },
-  filename: (req, file, cb) => {
-    const extension = path.extname(file.originalname).toLowerCase();
-    const fileName = `user-${req.user.id}-${Date.now()}${extension}`;
-    cb(null, fileName);
-  },
-});
-
 const uploadProfilePhoto = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 2 * 1024 * 1024,
   },
