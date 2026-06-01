@@ -17,6 +17,7 @@ const adminMenuItems = [
   { icon: "chart", label: "Grafico", page: "admin-grafico" },
   { icon: "goals", label: "Metas", page: "admin-metas" },
   { icon: "blog", label: "Blog", page: "admin-blog" },
+  { icon: "logout", label: "Sair", page: "logout" },
 ]
 
 export function Icon({ name, className = "" }) {
@@ -169,19 +170,24 @@ export function AdminSidebar({ activePage, onNavigate }) {
       <nav className="mt-8 flex flex-wrap gap-3 md:block md:space-y-3">
         {adminMenuItems.map((item) => {
           const isActive = activePage === item.page
+          const isLogout = item.page === "logout"
           return (
             <button
               key={item.label}
               type="button"
               onClick={() => onNavigate(item.page)}
               className={`flex h-8 min-w-32 items-center gap-2 rounded-lg px-3 text-left text-[14px] font-bold transition-colors md:w-full ${
-                isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : "text-[#765126] hover:bg-[#fcfbf9]"
+                isActive
+                  ? "bg-[#f2f1ef] text-[#8b4f1e]"
+                  : isLogout
+                    ? "text-[#9b3d1d] hover:bg-[#fff4ee]"
+                    : "text-[#765126] hover:bg-[#fcfbf9]"
               }`}
             >
               {item.icon === "team" ? (
                 <img src={colmeiaSimboloImg} alt="" className="h-7 w-7 object-cover" />
               ) : (
-                <Icon className="h-6 w-6 text-[#a36922]" name={item.icon} />
+                <Icon className={`h-6 w-6 ${isLogout ? "text-[#b95b2d]" : "text-[#a36922]"}`} name={item.icon} />
               )}
               {item.label}
             </button>

@@ -28,15 +28,23 @@ function Home() {
   const [authMessage, setAuthMessage] = useState("")
   const [isAuthLoading, setIsAuthLoading] = useState(false)
 
+  function clearRouteHash() {
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search)
+    }
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("accessToken")
+    setAuthModal(null)
+    setAuthMessage("")
+    setActivePage("landing")
+    clearRouteHash()
+  }
+
   function handleNavigate(page) {
     if (page === "logout") {
-      localStorage.removeItem("accessToken")
-      setAuthModal(null)
-      setAuthMessage("")
-      setActivePage("landing")
-      if (window.location.hash) {
-        window.history.replaceState(null, "", window.location.pathname + window.location.search)
-      }
+      handleLogout()
       return
     }
 
@@ -45,9 +53,7 @@ function Home() {
       window.location.hash = page
       return
     }
-    if (window.location.hash) {
-      window.history.replaceState(null, "", window.location.pathname + window.location.search)
-    }
+    clearRouteHash()
   }
 
   function openAuthModal(modal) {
