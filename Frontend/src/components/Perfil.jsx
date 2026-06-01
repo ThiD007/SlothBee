@@ -1,16 +1,160 @@
+import { useEffect, useMemo, useRef, useState } from "react"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import {
+  API_URL,
+  deleteProfilePhoto,
+  getCurrentUser,
+  updateCurrentUser,
+  updateProfilePhoto,
+} from "../services/auth.js"
 import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
 
-const profileFields = [
-  { label: "Nome", value: "Maria Eduarda de Barros" },
-  { label: "Email", value: "maria_eduarda_barros@gmail.com" },
-  { label: "Telefone", value: "(48) 99932 - 50003" },
-  { label: "Cargo", value: "Programadora Full-Stack" },
-  { label: "Senha", value: "***************" },
-]
+const emptyProfile = {
+  nome: "",
+  email: "",
+  telefone: "",
+  cargo: "",
+  foto_perfil: "",
+}
 
 function Perfil({ activePage, onNavigate }) {
+  const [profile, setProfile] = useState(emptyProfile)
+  const [formData, setFormData] = useState(emptyProfile)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isPhotoSaving, setIsPhotoSaving] = useState(false)
+  const [message, setMessage] = useState("")
+  const fileInputRef = useRef(null)
+
+  const accessToken = useMemo(() => localStorage.getItem("accessToken"), [])
+
+  useEffect(() => {
+    async function loadProfile() {
+      if (!accessToken) {
+        onNavigate("landing")
+        return
+      }
+
+      try {
+        setIsLoading(true)
+        setMessage("")
+        const user = await getCurrentUser(accessToken)
+        const nextProfile = {
+          nome: user.nome || "",
+          email: user.email || "",
+          telefone: user.telefone || "",
+          cargo: user.cargo || "",
+          foto_perfil: user.foto_perfil || "",
+        }
+
+        setProfile(nextProfile)
+        setFormData(nextProfile)
+      } catch (error) {
+        setMessage(error.message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadProfile()
+  }, [accessToken, onNavigate])
+
+  function handleChange(event) {
+    const { name, value } = event.target
+    setFormData((current) => ({ ...current, [name]: value }))
+  }
+
+  function handleCancel() {
+    setFormData(profile)
+    setIsEditing(false)
+    setMessage("")
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+
+    try {
+      setIsSaving(true)
+      setMessage("")
+      const updatedUser = await updateCurrentUser(accessToken, formData)
+      const nextProfile = {
+        nome: updatedUser.nome || "",
+        email: updatedUser.email || "",
+        telefone: updatedUser.telefone || "",
+        cargo: updatedUser.cargo || "",
+        foto_perfil: updatedUser.foto_perfil || "",
+      }
+
+      setProfile(nextProfile)
+      setFormData(nextProfile)
+      setIsEditing(false)
+      setMessage("Perfil atualizado com sucesso.")
+    } catch (error) {
+      setMessage(error.message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const profileFields = [
+    { label: "Nome", name: "nome", type: "text", required: true },
+    { label: "Email", name: "email", type: "email", required: true },
+    { label: "Telefone", name: "telefone", type: "tel" },
+    { label: "Cargo", name: "cargo", type: "text" },
+  ]
+
+  function getPhotoSrc(fotoPerfil) {
+    if (!fotoPerfil) return mascoteAlmofadaImg
+    if (fotoPerfil.startsWith("http")) return fotoPerfil
+    return `${API_URL}${fotoPerfil}`
+  }
+
+  async function handlePhotoChange(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+      setIsPhotoSaving(true)
+      setMessage("")
+      const updatedUser = await updateProfilePhoto(accessToken, file)
+      const nextProfile = {
+        ...profile,
+        foto_perfil: updatedUser.foto_perfil || "",
+      }
+
+      setProfile(nextProfile)
+      setFormData((current) => ({ ...current, foto_perfil: nextProfile.foto_perfil }))
+      setMessage("Foto atualizada com sucesso.")
+    } catch (error) {
+      setMessage(error.message)
+    } finally {
+      setIsPhotoSaving(false)
+      event.target.value = ""
+    }
+  }
+
+  async function handleRemovePhoto() {
+    try {
+      setIsPhotoSaving(true)
+      setMessage("")
+      const updatedUser = await deleteProfilePhoto(accessToken)
+      const nextProfile = {
+        ...profile,
+        foto_perfil: updatedUser.foto_perfil || "",
+      }
+
+      setProfile(nextProfile)
+      setFormData((current) => ({ ...current, foto_perfil: nextProfile.foto_perfil }))
+      setMessage("Foto removida com sucesso.")
+    } catch (error) {
+      setMessage(error.message)
+    } finally {
+      setIsPhotoSaving(false)
+    }
+  }
+
   return (
     <AppFrame
       activePage={activePage}
@@ -56,24 +200,41 @@ function Perfil({ activePage, onNavigate }) {
           <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:text-left">
             <div className="relative h-36 w-36 shrink-0 overflow-hidden rounded-full bg-[#d3d3d3]">
               <img
-                src={mascoteAlmofadaImg}
+                src={getPhotoSrc(profile.foto_perfil)}
                 alt="Foto de perfil"
-                className="h-full w-full scale-125 object-contain grayscale"
+                className={`h-full w-full ${profile.foto_perfil ? "object-cover" : "scale-125 object-contain grayscale"}`}
               />
               <span className="absolute bottom-4 right-7 h-6 w-6 rounded-full bg-[#9fb735]" />
             </div>
 
             <div className="pt-3">
-              <h1 className="text-xl font-black text-[#a46522]">Maria Eduarda</h1>
-              <p className="mt-1 text-sm font-black text-[#8a551f]">Exploradora do Foco</p>
+              <h1 className="text-xl font-black text-[#a46522]">{profile.nome || "Meu perfil"}</h1>
+              <p className="mt-1 text-sm font-black text-[#8a551f]">{profile.cargo || "Exploradora do Foco"}</p>
               <p className="mt-4 text-[12px] font-black text-[#8a551f]">"Foco e descanso no tempo certo."</p>
 
               <div className="mt-4 flex flex-wrap gap-3">
-                <button className="rounded-sm bg-[#fbe7c6] px-5 py-2 text-[12px] font-black text-[#a46522]">
-                  Remover foto
+                <input
+                  ref={fileInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                  type="file"
+                />
+                <button
+                  className="rounded-sm bg-[#fbe7c6] px-5 py-2 text-[12px] font-black text-[#a46522] disabled:opacity-70"
+                  disabled={isPhotoSaving || !profile.foto_perfil}
+                  onClick={handleRemovePhoto}
+                  type="button"
+                >
+                  {isPhotoSaving ? "Aguarde..." : "Remover foto"}
                 </button>
-                <button className="rounded-sm bg-[#fbe7c6] px-5 py-2 text-[12px] font-black text-[#a46522]">
-                  Alterar foto
+                <button
+                  className="rounded-sm bg-[#fbe7c6] px-5 py-2 text-[12px] font-black text-[#a46522] disabled:opacity-70"
+                  disabled={isPhotoSaving}
+                  onClick={() => fileInputRef.current?.click()}
+                  type="button"
+                >
+                  {isPhotoSaving ? "Enviando..." : profile.foto_perfil ? "Alterar foto" : "Adicionar foto"}
                 </button>
               </div>
             </div>
@@ -81,23 +242,50 @@ function Perfil({ activePage, onNavigate }) {
         </section>
 
         <section className="rounded-lg bg-[#f4f4f4] px-5 py-5 shadow-sm">
-          <div className="space-y-3">
+          <form className="space-y-3" onSubmit={handleSubmit}>
             {profileFields.map((field) => (
-              <div key={field.label}>
-                <label className="mb-1 block text-[12px] font-black text-[#8c9b3b]">{field.label}</label>
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4">
-                  <input
-                    readOnly
-                    value={field.value}
-                    className="h-8 rounded-sm bg-white px-3 text-[12px] font-bold text-[#8a551f] outline-none"
-                  />
-                  <button className="h-8 rounded-sm bg-[#b2c43f] px-6 text-[12px] font-black text-[#8a551f]">
-                    Editar
-                  </button>
-                </div>
+              <div key={field.name}>
+                <label className="mb-1 block text-[12px] font-black text-[#8c9b3b]" htmlFor={field.name}>
+                  {field.label}
+                </label>
+                <input
+                  className="h-8 w-full rounded-sm bg-white px-3 text-[12px] font-bold text-[#8a551f] outline-none disabled:opacity-80"
+                  disabled={!isEditing || isLoading || isSaving}
+                  id={field.name}
+                  name={field.name}
+                  onChange={handleChange}
+                  required={field.required}
+                  type={field.type}
+                  value={formData[field.name]}
+                />
               </div>
             ))}
-          </div>
+
+            {message && <p className="text-[12px] font-bold text-[#8a551f]">{message}</p>}
+
+            <div className="flex flex-wrap justify-end gap-3 pt-2">
+              {isEditing && (
+                <button
+                  className="h-8 rounded-sm bg-[#fbe7c6] px-6 text-[12px] font-black text-[#8a551f]"
+                  disabled={isSaving}
+                  onClick={handleCancel}
+                  type="button"
+                >
+                  Cancelar
+                </button>
+              )}
+              <button
+                className="h-8 rounded-sm bg-[#b2c43f] px-6 text-[12px] font-black text-[#8a551f] disabled:opacity-70"
+                disabled={isLoading || isSaving}
+                onClick={() => {
+                  if (!isEditing) setIsEditing(true)
+                }}
+                type={isEditing ? "submit" : "button"}
+              >
+                {isSaving ? "Salvando..." : isEditing ? "Salvar" : "Editar"}
+              </button>
+            </div>
+          </form>
         </section>
       </section>
     </AppFrame>

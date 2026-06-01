@@ -26,6 +26,9 @@ CREATE TABLE `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
+  `telefone` varchar(30) DEFAULT NULL,
+  `cargo` varchar(255) DEFAULT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
   `senha` varchar(255) DEFAULT NULL,
   `pontos_mel` int DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -39,7 +42,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Luiza','luiza@gmail.com','123456',NULL),(2,'maria','maria@gmail.com','$2b$10$ZPBRmtcy5I0bhD8FxeMTmO1KgSbBb17pO4MKtmPNZXXm.FHTnwvpm',NULL),(3,'Vitor','vitor@gmail.com','$2b$10$JQy0ZwA76KunEzYkgTLLxuqGL7H7ma8GPHvFamReXwOr6RSjG5tiy',NULL);
+INSERT INTO `usuarios` VALUES (1,'Luiza','luiza@gmail.com',NULL,NULL,NULL,'123456',NULL),(2,'maria','maria@gmail.com',NULL,NULL,NULL,'$2b$10$ZPBRmtcy5I0bhD8FxeMTmO1KgSbBb17pO4MKtmPNZXXm.FHTnwvpm',NULL),(3,'Vitor','vitor@gmail.com',NULL,NULL,NULL,'$2b$10$JQy0ZwA76KunEzYkgTLLxuqGL7H7ma8GPHvFamReXwOr6RSjG5tiy',NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
