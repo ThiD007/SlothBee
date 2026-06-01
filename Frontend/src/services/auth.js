@@ -4,6 +4,10 @@ export function isUnauthorizedError(error) {
   return error?.status === 401
 }
 
+export function isAdminEmail(email) {
+  return String(email || "").trim().toLowerCase().endsWith("@gmail.com.adm")
+}
+
 export function handleUnauthorized() {
   localStorage.removeItem("accessToken")
   window.dispatchEvent(new Event("auth:unauthorized"))

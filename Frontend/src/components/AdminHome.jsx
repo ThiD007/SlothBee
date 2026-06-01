@@ -97,7 +97,7 @@ function AdminHome({ activePage, onNavigate }) {
               Metas em destaque
             </div>
             <div className="mt-4 space-y-3 text-[12px] font-bold text-[#765126]">
-              <p className="rounded-md bg-[#f7f3e8] p-3">Beber agua ao iniciar uma sessao de foco.</p>
+              <p className="rounded-md bg-[#f7f3e8] p-3">Beber agua ao iniciar uma sessão de foco.</p>
               <p className="rounded-md bg-[#f7f3e8] p-3">Fazer uma pausa consciente a cada ciclo.</p>
               <p className="rounded-md bg-[#f7f3e8] p-3">Registrar uma pequena vitoria do dia.</p>
             </div>

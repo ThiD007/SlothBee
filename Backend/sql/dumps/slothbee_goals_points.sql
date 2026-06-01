@@ -36,19 +36,19 @@ CREATE TABLE IF NOT EXISTS `metas_concluidas` (
 );
 
 INSERT INTO `metas` (`titulo`, `pontos`, `tipo`, `usuario_id`, `active`)
-SELECT 'Beber 2 copos de agua', 50, 'today', NULL, 1
+SELECT 'Beber 2 copos de agua', 15, 'today', NULL, 1
 WHERE NOT EXISTS (SELECT 1 FROM `metas` WHERE `tipo` = 'today' AND `titulo` = 'Beber 2 copos de agua');
 
 INSERT INTO `metas` (`titulo`, `pontos`, `tipo`, `usuario_id`, `active`)
-SELECT 'Fazer 30 min de caminhada', 20, 'today', NULL, 1
+SELECT 'Fazer 30 min de caminhada', 15, 'today', NULL, 1
 WHERE NOT EXISTS (SELECT 1 FROM `metas` WHERE `tipo` = 'today' AND `titulo` = 'Fazer 30 min de caminhada');
 
 INSERT INTO `metas` (`titulo`, `pontos`, `tipo`, `usuario_id`, `active`)
-SELECT 'Planejar o almoco', 20, 'today', NULL, 1
+SELECT 'Planejar o almoco', 15, 'today', NULL, 1
 WHERE NOT EXISTS (SELECT 1 FROM `metas` WHERE `tipo` = 'today' AND `titulo` = 'Planejar o almoco');
 
 INSERT INTO `metas` (`titulo`, `pontos`, `tipo`, `usuario_id`, `active`)
-SELECT 'Meditar 10 min', 50, 'today', NULL, 1
+SELECT 'Meditar 10 min', 15, 'today', NULL, 1
 WHERE NOT EXISTS (SELECT 1 FROM `metas` WHERE `tipo` = 'today' AND `titulo` = 'Meditar 10 min');
 
 INSERT INTO `metas` (`titulo`, `pontos`, `tipo`, `usuario_id`, `active`)

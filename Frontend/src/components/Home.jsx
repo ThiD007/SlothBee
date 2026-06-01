@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { getCurrentUser, isUnauthorizedError, login, register } from "../services/auth.js"
+import { getCurrentUser, isAdminEmail, isUnauthorizedError, login, register } from "../services/auth.js"
 import AdminBlog from "./AdminBlog.jsx"
 import AdminEquipes from "./AdminEquipes.jsx"
 import AdminGraficoEquipe from "./AdminGraficoEquipe.jsx"
@@ -17,8 +17,8 @@ const adminPages = new Set(["admin-inicio", "admin-equipes", "admin-grafico", "a
 
 function getInitialPage() {
   const hashPage = window.location.hash.replace("#", "")
-  if (hashPage === "admin") return "admin-inicio"
-  if (adminPages.has(hashPage)) return hashPage
+  if (hashPage === "admin") return localStorage.getItem("accessToken") ? "admin-inicio" : "landing"
+  if (adminPages.has(hashPage)) return localStorage.getItem("accessToken") ? hashPage : "landing"
   return localStorage.getItem("accessToken") ? "inicio" : "landing"
 }
 
@@ -27,20 +27,38 @@ function Home() {
   const [authModal, setAuthModal] = useState(null)
   const [authMessage, setAuthMessage] = useState("")
   const [isAuthLoading, setIsAuthLoading] = useState(false)
+  const [isSessionLoading, setIsSessionLoading] = useState(Boolean(localStorage.getItem("accessToken")))
+  const [currentUser, setCurrentUser] = useState(null)
 
-  function clearRouteHash() {
+  const isCurrentUserAdmin = isAdminEmail(currentUser?.email)
+
+  const clearRouteHash = useCallback(() => {
     if (window.location.hash) {
       window.history.replaceState(null, "", window.location.pathname + window.location.search)
     }
-  }
+  }, [])
+
+  const openPage = useCallback(
+    (page) => {
+      setActivePage(page)
+      if (adminPages.has(page)) {
+        window.location.hash = page
+        return
+      }
+
+      clearRouteHash()
+    },
+    [clearRouteHash]
+  )
 
   const handleInvalidSession = useCallback(() => {
     localStorage.removeItem("accessToken")
+    setCurrentUser(null)
     setAuthModal(null)
-    setAuthMessage("Sua sessao expirou. Faca login novamente.")
+    setAuthMessage("Sua sessão expirou. Faca login novamente.")
     setActivePage("landing")
     clearRouteHash()
-  }, [])
+  }, [clearRouteHash])
 
   useEffect(() => {
     window.addEventListener("auth:unauthorized", handleInvalidSession)
@@ -58,11 +76,23 @@ function Home() {
 
     async function validateSession() {
       try {
-        await getCurrentUser(accessToken)
+        const user = await getCurrentUser(accessToken)
+        if (!ignore) {
+          setCurrentUser(user)
+          if (isAdminEmail(user.email)) {
+            setActivePage((currentPage) => {
+              if (adminPages.has(currentPage)) return currentPage
+              window.location.hash = "admin-inicio"
+              return "admin-inicio"
+            })
+          }
+        }
       } catch (error) {
         if (!ignore && isUnauthorizedError(error)) {
           handleInvalidSession()
         }
+      } finally {
+        if (!ignore) setIsSessionLoading(false)
       }
     }
 
@@ -73,12 +103,21 @@ function Home() {
     }
   }, [handleInvalidSession])
 
+  useEffect(() => {
+    if (isSessionLoading || !adminPages.has(activePage) || isCurrentUserAdmin) return
+
+    setAuthMessage("Acesso permitido apenas para administradores.")
+    setActivePage(currentUser ? "inicio" : "landing")
+    clearRouteHash()
+  }, [activePage, clearRouteHash, currentUser, isCurrentUserAdmin, isSessionLoading])
+
   function handleLogout() {
     localStorage.removeItem("accessToken")
+    setCurrentUser(null)
+    setIsSessionLoading(false)
     setAuthModal(null)
     setAuthMessage("")
-    setActivePage("landing")
-    clearRouteHash()
+    openPage("landing")
   }
 
   function handleNavigate(page) {
@@ -87,12 +126,14 @@ function Home() {
       return
     }
 
-    setActivePage(page)
-    if (adminPages.has(page)) {
-      window.location.hash = page
+    if (adminPages.has(page) && !isCurrentUserAdmin) {
+      setAuthMessage("Acesso permitido apenas para administradores.")
+      setActivePage(currentUser ? "inicio" : "landing")
+      clearRouteHash()
       return
     }
-    clearRouteHash()
+
+    openPage(page)
   }
 
   function openAuthModal(modal) {
@@ -106,8 +147,10 @@ function Home() {
       setAuthMessage("")
       const data = await login(credentials)
       localStorage.setItem("accessToken", data.accessToken)
+      const user = await getCurrentUser(data.accessToken)
+      setCurrentUser(user)
       setAuthModal(null)
-      handleNavigate("inicio")
+      openPage(isAdminEmail(user.email) ? "admin-inicio" : "inicio")
     } catch (error) {
       setAuthMessage(error.message)
     } finally {
@@ -125,8 +168,10 @@ function Home() {
         senha: userData.senha,
       })
       localStorage.setItem("accessToken", data.accessToken)
+      const user = await getCurrentUser(data.accessToken)
+      setCurrentUser(user)
       setAuthModal(null)
-      handleNavigate("inicio")
+      openPage(isAdminEmail(user.email) ? "admin-inicio" : "inicio")
     } catch (error) {
       setAuthMessage(error.message)
     } finally {
@@ -164,8 +209,12 @@ function Home() {
 
   const pageProps = {
     activePage,
+    currentUser,
     onNavigate: handleNavigate,
   }
+
+  if (adminPages.has(activePage) && isSessionLoading) return null
+  if (adminPages.has(activePage) && !isCurrentUserAdmin) return null
 
   if (activePage === "admin-inicio") return <AdminHome {...pageProps} />
   if (activePage === "admin-equipes") return <AdminEquipes {...pageProps} />

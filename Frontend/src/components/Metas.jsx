@@ -10,7 +10,8 @@ import {
 import { getHoneyPoints } from "../services/points.js"
 import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
 
-const emptyGoalForm = { text: "", points: 10 }
+const SELFCARE_GOAL_POINTS = 15
+const emptyGoalForm = { text: "", points: SELFCARE_GOAL_POINTS }
 
 function GoalGroup({ title, goals, editable, onToggle, onEdit, onDelete }) {
   return (
@@ -106,7 +107,7 @@ function Metas({ activePage, onNavigate }) {
 
   function handleEdit(goal) {
     setEditingGoalId(goal.id)
-    setForm({ text: goal.text, points: goal.points })
+    setForm({ text: goal.text, points: SELFCARE_GOAL_POINTS })
   }
 
   async function handleSubmit(event) {
@@ -114,10 +115,11 @@ function Metas({ activePage, onNavigate }) {
 
     try {
       setMessage("")
+      const selfcareGoal = { ...form, points: SELFCARE_GOAL_POINTS }
       if (editingGoalId) {
-        await updateSelfcareGoal(editingGoalId, form)
+        await updateSelfcareGoal(editingGoalId, selfcareGoal)
       } else {
-        await createSelfcareGoal(form)
+        await createSelfcareGoal(selfcareGoal)
       }
       setForm(emptyGoalForm)
       setEditingGoalId(null)
@@ -162,14 +164,9 @@ function Metas({ activePage, onNavigate }) {
                 required
                 value={form.text}
               />
-              <input
-                className="h-9 rounded-sm bg-[#f7f3e8] px-3 text-[12px] font-bold text-[#8a551f] outline-none"
-                min="1"
-                onChange={(event) => setForm((current) => ({ ...current, points: Number(event.target.value) }))}
-                required
-                type="number"
-                value={form.points}
-              />
+              <p className="rounded-sm bg-[#f7f3e8] px-3 py-2 text-[12px] font-bold text-[#8a551f]">
+                Cada meta de autocuidado vale {SELFCARE_GOAL_POINTS} pontos de mel.
+              </p>
               <div className="flex flex-wrap gap-2">
                 <button className="h-9 rounded-sm bg-[#b3c843] px-4 text-[12px] font-black text-[#795719]" type="submit">
                   {editingGoalId ? "Salvar meta" : "Adicionar meta"}

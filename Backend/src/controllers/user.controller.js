@@ -13,16 +13,17 @@ async function update(req, res, next) {
   try{
     const { nome, name, email, telefone, cargo, senha, password } = req.body;
     const userName = nome || name;
+    const userEmail = String(email || "").trim().toLowerCase();
     const plainPassword = senha || password;
 
-    if (!userName || !email) {
+    if (!userName || !userEmail) {
       return res.status(400).json({ message: "Nome e e-mail sao obrigatorios" });
     }
 
     const password_hash = plainPassword ? await hashPassword(plainPassword) : null;
     await repo.userUpdate(req.user.id, {
       nome: userName,
-      email,
+      email: userEmail,
       telefone,
       cargo,
       senha: password_hash,

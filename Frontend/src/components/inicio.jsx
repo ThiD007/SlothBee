@@ -27,7 +27,19 @@ function formatSeconds(totalSeconds) {
   return `${minutes}:${seconds}`
 }
 
-function Inicio({ activePage, onNavigate }) {
+function getGreeting() {
+  const hour = new Date().getHours()
+
+  if (hour < 12) return "Bom dia"
+  if (hour < 18) return "Boa tarde"
+  return "Boa noite"
+}
+
+function getFirstName(user) {
+  return user?.nome?.trim().split(/\s+/)[0] || ""
+}
+
+function Inicio({ activePage, currentUser, onNavigate }) {
   const [timer, setTimer] = useState(null)
   const [timerMode, setTimerMode] = useState("stopwatch")
   const [focusMinutes, setFocusMinutes] = useState(25)
@@ -35,6 +47,8 @@ function Inicio({ activePage, onNavigate }) {
   const [timerMessage, setTimerMessage] = useState("")
   const [isTimerLoading, setIsTimerLoading] = useState(false)
   const [honeyPoints, setHoneyPoints] = useState(0)
+  const greeting = getGreeting()
+  const firstName = getFirstName(currentUser)
 
   useEffect(() => {
     let ignore = false
@@ -92,7 +106,7 @@ function Inicio({ activePage, onNavigate }) {
         const data = await finishTimer(timer.id)
         setTimer(data.timer)
         setHoneyPoints(data.honeyPoints)
-        setTimerMessage("Sessao de foco finalizada")
+        setTimerMessage("Sessão de foco finalizada")
         window.alert("Tempo finalizado! Hora de descansar.")
       } catch (error) {
         setTimerMessage(error.message)
@@ -130,9 +144,9 @@ function Inicio({ activePage, onNavigate }) {
       const data = await finishTimer(timer.id)
       setTimer(data.timer)
       setHoneyPoints(data.honeyPoints)
-      setTimerMessage("Sessao de foco finalizada")
+      setTimerMessage("Sessão de foco finalizada")
       if (data.earnedHoneyPoints > 0) {
-        setTimerMessage(`Sessao finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
+        setTimerMessage(`Sessão finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
       }
     } catch (error) {
       setTimerMessage(error.message)
@@ -151,7 +165,17 @@ function Inicio({ activePage, onNavigate }) {
       <section className="inicio-layout">
         <section className="inicio-hero relative min-h-[170px] overflow-hidden rounded-lg bg-white shadow-sm sm:min-h-[220px]">
           <div className="absolute left-5 top-7 z-10 h-24 w-28 -rotate-12 rounded-md bg-[#fbfaf7] p-3 shadow-md sm:left-9 sm:top-9 sm:h-28 sm:w-32 sm:p-4">
-            <p className="text-[13px] font-black text-[#8b4f1e] sm:text-[16px]">Bem vindo!</p>
+            <p className="text-[13px] font-black leading-tight text-[#8b4f1e] sm:text-[16px]">
+              {greeting}
+              {firstName ? (
+                <>
+                  ,<br />
+                  {firstName}!
+                </>
+              ) : (
+                "!"
+              )}
+            </p>
             <span className="mt-5 block text-center text-2xl text-[#5f8f34] sm:mt-6 sm:text-3xl">{"\u2665"}</span>
           </div>
 
@@ -217,7 +241,7 @@ function Inicio({ activePage, onNavigate }) {
             )}
 
             <span className="mx-auto inline-flex min-h-8 items-center rounded-full bg-[#eee5bf] px-5 text-[10px] font-bold text-[#957334]">
-              {timer?.status === "finished" ? "Sessao finalizada" : "Sessao de foco"}
+              {timer?.status === "finished" ? "Sessão finalizada" : "Sessão de foco"}
             </span>
 
             {timerMessage && <p className="min-h-4 text-[10px] font-bold leading-tight text-[#8d641e]">{timerMessage}</p>}

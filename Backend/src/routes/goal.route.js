@@ -10,7 +10,7 @@ const {
   adminUpdateToday,
   adminDeleteToday,
 } = require("../controllers/goal.controller");
-const { authRequired } = require("../middlewares/auth.middleware");
+const { authRequired, adminRequired } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
@@ -20,9 +20,9 @@ router.post("/goals/selfcare", authRequired, createSelfcare);
 router.put("/goals/selfcare/:id", authRequired, updateSelfcare);
 router.delete("/goals/selfcare/:id", authRequired, deleteSelfcare);
 
-router.get("/admin/goals/today", adminListToday);
-router.post("/admin/goals/today", adminCreateToday);
-router.put("/admin/goals/today/:id", adminUpdateToday);
-router.delete("/admin/goals/today/:id", adminDeleteToday);
+router.get("/admin/goals/today", authRequired, adminRequired, adminListToday);
+router.post("/admin/goals/today", authRequired, adminRequired, adminCreateToday);
+router.put("/admin/goals/today/:id", authRequired, adminRequired, adminUpdateToday);
+router.delete("/admin/goals/today/:id", authRequired, adminRequired, adminDeleteToday);
 
 module.exports = router;

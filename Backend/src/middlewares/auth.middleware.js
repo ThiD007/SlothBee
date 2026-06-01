@@ -1,5 +1,9 @@
 const jwt = require("jsonwebtoken");
 
+function isAdminEmail(email) {
+    return String(email || "").toLowerCase().endsWith("@gmail.com.adm");
+}
+
 function authRequired(req, res, next){
       const auth = req.headers.authorization;
     if(!auth) return res.status(401).json({message: "Token ausente"});  
@@ -14,4 +18,12 @@ function authRequired(req, res, next){
     }
 };
 
-module.exports = {authRequired}
+function adminRequired(req, res, next) {
+    if (!isAdminEmail(req.user?.email)) {
+        return res.status(403).json({ message: "Acesso permitido apenas para administradores" });
+    }
+
+    next();
+}
+
+module.exports = {authRequired, adminRequired, isAdminEmail}

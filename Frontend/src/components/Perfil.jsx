@@ -16,6 +16,7 @@ const emptyProfile = {
   telefone: "",
   cargo: "",
   foto_perfil: "",
+  senha: "",
 }
 
 function Perfil({ activePage, onNavigate }) {
@@ -25,6 +26,7 @@ function Perfil({ activePage, onNavigate }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isPhotoSaving, setIsPhotoSaving] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState("")
   const fileInputRef = useRef(null)
 
@@ -47,6 +49,7 @@ function Perfil({ activePage, onNavigate }) {
           telefone: user.telefone || "",
           cargo: user.cargo || "",
           foto_perfil: user.foto_perfil || "",
+          senha: "",
         }
 
         setProfile(nextProfile)
@@ -68,11 +71,16 @@ function Perfil({ activePage, onNavigate }) {
 
   function handleEditField(fieldName) {
     setEditingField(fieldName)
+    if (fieldName === "senha") {
+      setFormData((current) => ({ ...current, senha: "" }))
+      setShowPassword(false)
+    }
     setMessage("")
   }
 
   function handleCancelField(fieldName) {
     setFormData((current) => ({ ...current, [fieldName]: profile[fieldName] }))
+    if (fieldName === "senha") setShowPassword(false)
     setEditingField(null)
     setMessage("")
   }
@@ -90,11 +98,13 @@ function Perfil({ activePage, onNavigate }) {
         telefone: updatedUser.telefone || "",
         cargo: updatedUser.cargo || "",
         foto_perfil: updatedUser.foto_perfil || "",
+        senha: "",
       }
 
       setProfile(nextProfile)
       setFormData(nextProfile)
       setEditingField(null)
+      setShowPassword(false)
       setMessage("Perfil atualizado com sucesso.")
     } catch (error) {
       setMessage(error.message)
@@ -108,6 +118,7 @@ function Perfil({ activePage, onNavigate }) {
     { label: "Email", name: "email", type: "email", required: true },
     { label: "Telefone", name: "telefone", type: "tel" },
     { label: "Cargo", name: "cargo", type: "text" },
+    { label: "Senha", name: "senha", type: "password" },
   ]
 
   function getPhotoSrc(fotoPerfil) {
@@ -254,16 +265,32 @@ function Perfil({ activePage, onNavigate }) {
                   {field.label}
                 </label>
                 <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                  <input
-                    className="h-8 w-full rounded-sm bg-white px-3 text-[12px] font-bold text-[#8a551f] outline-none disabled:opacity-80"
-                    disabled={editingField !== field.name || isLoading || isSaving}
-                    id={field.name}
-                    name={field.name}
-                    onChange={handleChange}
-                    required={field.required}
-                    type={field.type}
-                    value={formData[field.name]}
-                  />
+                  <div className="relative">
+                    <input
+                      className={`h-8 w-full rounded-sm bg-white px-3 text-[12px] font-bold text-[#8a551f] outline-none disabled:opacity-80 ${
+                        field.name === "senha" && editingField === field.name ? "pr-10" : ""
+                      }`}
+                      disabled={editingField !== field.name || isLoading || isSaving}
+                      id={field.name}
+                      name={field.name}
+                      onChange={handleChange}
+                      placeholder={field.name === "senha" && editingField === field.name ? "Digite a nova senha" : ""}
+                      required={field.required || editingField === "senha"}
+                      type={field.name === "senha" && showPassword ? "text" : field.type}
+                      value={field.name === "senha" && editingField !== field.name ? "***" : formData[field.name]}
+                    />
+                    {field.name === "senha" && editingField === field.name && (
+                      <button
+                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm text-[#a46522] hover:bg-[#fbe7c6]"
+                        onClick={() => setShowPassword((current) => !current)}
+                        title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        type="button"
+                      >
+                        <Icon className="h-4 w-4" name={showPassword ? "eyeOff" : "eye"} />
+                      </button>
+                    )}
+                  </div>
 
                   {editingField === field.name ? (
                     <div className="grid grid-cols-2 gap-2 sm:flex">

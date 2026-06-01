@@ -10,7 +10,8 @@ import {
 } from "../services/goals.js"
 import { AdminFrame, Icon } from "./shared.jsx"
 
-const emptyGoalForm = { text: "", points: 10 }
+const GOAL_POINTS = 15
+const emptyGoalForm = { text: "", points: GOAL_POINTS }
 
 function AdminMetas({ activePage, onNavigate }) {
   const [goals, setGoals] = useState([])
@@ -33,7 +34,7 @@ function AdminMetas({ activePage, onNavigate }) {
 
   function handleEdit(goal) {
     setEditingGoalId(goal.id)
-    setForm({ text: goal.text, points: goal.points })
+    setForm({ text: goal.text, points: GOAL_POINTS })
   }
 
   async function handleSubmit(event) {
@@ -41,10 +42,11 @@ function AdminMetas({ activePage, onNavigate }) {
 
     try {
       setMessage("")
+      const goalData = { ...form, points: GOAL_POINTS }
       if (editingGoalId) {
-        await updateAdminTodayGoal(editingGoalId, form)
+        await updateAdminTodayGoal(editingGoalId, goalData)
       } else {
-        await createAdminTodayGoal(form)
+        await createAdminTodayGoal(goalData)
       }
       setForm(emptyGoalForm)
       setEditingGoalId(null)
@@ -132,17 +134,9 @@ function AdminMetas({ activePage, onNavigate }) {
                   value={form.text}
                 />
               </label>
-              <label className="text-[12px] font-black text-[#8c9b3b]">
-                Pontos
-                <input
-                  className="mt-1 h-9 w-full rounded-sm bg-[#f7f3e8] px-3 text-[12px] font-bold text-[#8a551f] outline-none"
-                  min="1"
-                  onChange={(event) => setForm((current) => ({ ...current, points: Number(event.target.value) }))}
-                  required
-                  type="number"
-                  value={form.points}
-                />
-              </label>
+              <p className="rounded-sm bg-[#f7f3e8] px-3 py-2 text-[12px] font-bold text-[#8a551f]">
+                Cada meta vale {GOAL_POINTS} pontos de mel.
+              </p>
               {message && <p className="text-[12px] font-bold text-[#8a551f]">{message}</p>}
               <button
                 className="mt-2 inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-[#b3c843] px-4 text-[12px] font-black text-[#795719]"
