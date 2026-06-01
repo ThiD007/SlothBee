@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
 --
 -- Host: localhost    Database: slothbee
 -- ------------------------------------------------------
--- Server version	8.4.3
+-- Server version	8.0.45
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,34 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `usuarios`
+-- Table structure for table `cronometros`
 --
 
-DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `cronometros`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `usuarios` (
+CREATE TABLE `cronometros` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `senha` varchar(255) DEFAULT NULL,
-  `pontos_mel` int DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
-  `cargo` varchar(255) DEFAULT NULL,
-  `foto_perfil` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
+  `usuario_id` int NOT NULL,
+  `modo` enum('cronometro','contagem_regressiva') NOT NULL DEFAULT 'cronometro',
+  `duracao_segundos` int DEFAULT NULL,
+  `iniciado_em` datetime NOT NULL,
+  `finalizado_em` datetime DEFAULT NULL,
+  `status` enum('ativo','finalizado') NOT NULL DEFAULT 'ativo',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `usuarios`
+-- Dumping data for table `cronometros`
 --
 
-LOCK TABLES `usuarios` WRITE;
-/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Luiza','luiza@gmail.com','123456',NULL,NULL,NULL,NULL),(2,'maria','maria@gmail.com','$2b$10$ZPBRmtcy5I0bhD8FxeMTmO1KgSbBb17pO4MKtmPNZXXm.FHTnwvpm',NULL,NULL,NULL,'/uploads/profile/user-2-1780319255303.jpg'),(3,'Vitor','vitor@gmail.com','$2b$10$JQy0ZwA76KunEzYkgTLLxuqGL7H7ma8GPHvFamReXwOr6RSjG5tiy',NULL,NULL,NULL,NULL),(4,'laura','laura@gmail.com','$2b$10$diJLFoQrbqh/.oyy9mCIjeAd26P59Htb2OGuz7PE196s/3WnaAVW6',NULL,'4257686798','Desenvolvedora','/uploads/profile/user-4-1780320125035.jpg');
-/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+LOCK TABLES `cronometros` WRITE;
+/*!40000 ALTER TABLE `cronometros` DISABLE KEYS */;
+INSERT INTO `cronometros` VALUES (1,5,'cronometro',NULL,'2026-06-01 15:31:36','2026-06-01 15:31:43','finalizado'),(2,5,'contagem_regressiva',1500,'2026-06-01 15:31:50','2026-06-01 15:31:54','finalizado'),(3,5,'contagem_regressiva',1500,'2026-06-01 15:35:39','2026-06-01 15:35:41','finalizado'),(4,5,'cronometro',NULL,'2026-06-01 15:35:48','2026-06-01 15:35:51','finalizado'),(5,5,'cronometro',NULL,'2026-06-01 15:35:57','2026-06-01 15:35:59','finalizado'),(6,5,'contagem_regressiva',1500,'2026-06-01 15:36:03','2026-06-01 15:36:07','finalizado');
+/*!40000 ALTER TABLE `cronometros` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -55,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-01 10:25:26
+-- Dump completed on 2026-06-01 16:33:39
