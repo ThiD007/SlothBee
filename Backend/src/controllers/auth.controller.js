@@ -4,19 +4,19 @@ const repo = require("../repositories/user.repo");
 
 async function register(req, res, next) {
   try {
-    const { nome, name, email, telefone, cargo, senha, password } = req.body;
+    const { nome, name, email, telefone, cargo, telefone, senha, password } = req.body;
     const userName = nome || name;
     const plainPassword = senha || password;
 
-    if (!userName || !email || !plainPassword) {
-      return res.status(400).json({ message: "Nome, e-mail e senha sao obrigatorios" });
+    if (!userName || !email || !telefone || !cargo || !plainPassword) {
+      return res.status(400).json({ message: "Nome, e-mail, telefone, cargo e senha sao obrigatorios" });
     }
 
     const exists = await repo.findByEmail(email);
     if (exists) return res.status(409).json({ message: "E-mail já cadastrado" });
 
     const hash = await hashPassword(plainPassword);
-    await repo.createUser(userName, email, hash, telefone, cargo);
+    await repo.createUser(userName, email, hash);
     res.status(201).json({ message: "Usuário criado" });
   } catch (e) { next(e); }
 }

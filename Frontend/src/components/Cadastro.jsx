@@ -7,6 +7,8 @@ function Cadastro({ onClose, onBackToLogin, onCreate, isLoading = false, message
     onCreate({
       nome: formData.get("nome"),
       email: formData.get("email"),
+      telefone: formData.get("telefone"),
+      cargo: formData.get("cargo"),
       senha: formData.get("senha"),
     })
   }
@@ -15,7 +17,7 @@ function Cadastro({ onClose, onBackToLogin, onCreate, isLoading = false, message
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-[520px] rounded-2xl bg-white px-7 pb-7 pt-6 shadow-xl"
+        className="relative max-h-[92vh] w-full max-w-[520px] overflow-y-auto rounded-2xl bg-white px-7 pb-7 pt-6 shadow-xl"
       >
         <button
           type="button"
@@ -46,6 +48,28 @@ function Cadastro({ onClose, onBackToLogin, onCreate, isLoading = false, message
           id="register-email"
           name="email"
           type="email"
+          required
+          className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
+        />
+
+        <label className="mt-4 block text-sm font-bold text-[#9a5a1e]" htmlFor="register-phone">
+          Telefone:
+        </label>
+        <input
+          id="register-phone"
+          name="telefone"
+          type="tel"
+          required
+          className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
+        />
+
+        <label className="mt-4 block text-sm font-bold text-[#9a5a1e]" htmlFor="register-role">
+          Cargo de trabalho:
+        </label>
+        <input
+          id="register-role"
+          name="cargo"
+          type="text"
           required
           className="mt-1 h-11 w-full rounded-full border border-[#d7b78a] bg-[#fffdf9] px-4 text-[#5c3717] outline-none"
         />

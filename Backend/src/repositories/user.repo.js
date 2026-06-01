@@ -8,16 +8,16 @@ async function findByEmail(email) {
     return rows[0];
 }
 
-async function createUser(nome, email, senha, telefone = null, cargo = null) {
+async function createUser(nome, email, senha) {
     const [result] = await db.query(
-        "INSERT INTO usuarios (nome, email, senha, telefone, cargo) VALUES (?, ?, ?, ?, ?)",
-        [nome, email, senha, telefone, cargo]
+        "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)",
+        [nome, email, senha]
     );
     return result.insertId;
 }
 
 async function findById(id) {
-    const [rows] = await db.query("SELECT id, nome, email, telefone, cargo, foto_perfil FROM usuarios WHERE id = ?",[id]);
+    const [rows] = await db.query("SELECT id, nome, email FROM usuarios WHERE id = ?",[id]);
     return rows[0]
 }
 

@@ -25,10 +25,10 @@ export function login({ email, senha }) {
   })
 }
 
-export function register({ nome, email, senha }) {
+export function register({ nome, email, telefone, cargo, senha }) {
   return request("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ nome, email, senha }),
+    body: JSON.stringify({ nome, email, telefone, cargo, senha }),
   })
 }
 

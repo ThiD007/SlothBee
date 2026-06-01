@@ -94,6 +94,14 @@ function BlogCard({ post, onRead }) {
 }
 
 function BlogList({ onRead }) {
+  const [isProfessionalOpen, setIsProfessionalOpen] = useState(false)
+  const professional = {
+    name: "Dra. Mariana Alves",
+    role: "Psicologa clinica",
+    phone: "(11) 99876-5432",
+    image: mascoteAlmofadaImg,
+  }
+
   return (
     <section className="min-h-[calc(100vh-1rem)] rounded-sm bg-[#fffdf5] p-5 shadow-sm lg:col-span-2">
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
@@ -131,6 +139,7 @@ function BlogList({ onRead }) {
             </p>
             <button
               type="button"
+              onClick={() => setIsProfessionalOpen(true)}
               className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-[#5d8f44] px-4 text-[12px] font-black text-white"
             >
               <Icon className="h-4 w-4" name="chat" />
@@ -150,6 +159,28 @@ function BlogList({ onRead }) {
           </section>
         </aside>
       </div>
+
+      {isProfessionalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
+          <div className="relative w-full max-w-[360px] rounded-sm bg-white p-6 text-center shadow-xl">
+            <button
+              type="button"
+              onClick={() => setIsProfessionalOpen(false)}
+              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center text-[#263d2a]"
+              aria-label="Fechar contato do profissional"
+            >
+              <Icon className="h-6 w-6" name="close" />
+            </button>
+
+            <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-[#f3f7df]">
+              <img src={professional.image} alt={professional.name} className="h-24 w-24 object-contain" />
+            </div>
+            <h2 className="mt-4 text-2xl font-black text-[#263d2a]">{professional.name}</h2>
+            <p className="mt-1 text-sm font-bold text-[#5d8f44]">{professional.role}</p>
+            <p className="mt-4 text-lg font-black text-[#9a5a1e]">{professional.phone}</p>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
