@@ -9,6 +9,13 @@ async function me(req, res, next) {
   } catch (e) { next(e); }
 }
 
+async function list(req, res, next) {
+  try {
+    const users = await repo.listUsers();
+    res.json({ users });
+  } catch (e) { next(e); }
+}
+
 async function update(req, res, next) {
   try{
     const { nome, name, email, telefone, cargo, senha, password } = req.body;
@@ -71,4 +78,4 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { me, update, updatePhoto, removePhoto, remove };
+module.exports = { list, me, update, updatePhoto, removePhoto, remove };

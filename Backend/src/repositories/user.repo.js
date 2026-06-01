@@ -21,6 +21,22 @@ async function findById(id) {
     return rows[0]
 }
 
+async function listUsers() {
+    const [rows] = await db.query(
+        `SELECT
+            id,
+            nome,
+            email,
+            telefone,
+            cargo,
+            foto_perfil,
+            COALESCE(pontos_mel, 0) AS pontos_mel
+         FROM usuarios
+         ORDER BY nome`
+    );
+    return rows;
+}
+
 async function userUpdate(id, { nome, email, telefone, cargo, senha }) {
     const fields = ["nome = ?", "email = ?", "telefone = ?", "cargo = ?"];
     const values = [nome, email, telefone || null, cargo || null];
@@ -50,4 +66,4 @@ async function userDelete(id) {
   );
 }
 
-module.exports = {findByEmail, createUser, findById, userUpdate, userPhotoUpdate, userDelete};
+module.exports = {findByEmail, createUser, findById, listUsers, userUpdate, userPhotoUpdate, userDelete};
