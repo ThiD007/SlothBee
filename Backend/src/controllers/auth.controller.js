@@ -4,7 +4,7 @@ const repo = require("../repositories/user.repo");
 
 async function register(req, res, next) {
   try {
-    const { nome, name, email, telefone, cargo, telefone, senha, password } = req.body;
+    const { nome, name, email, telefone, cargo, senha, password } = req.body;
     const userName = nome || name;
     const plainPassword = senha || password;
 
@@ -16,7 +16,7 @@ async function register(req, res, next) {
     if (exists) return res.status(409).json({ message: "E-mail já cadastrado" });
 
     const hash = await hashPassword(plainPassword);
-    await repo.createUser(userName, email, hash);
+    await repo.createUser(userName, email, hash, telefone, cargo);
     res.status(201).json({ message: "Usuário criado" });
   } catch (e) { next(e); }
 }
