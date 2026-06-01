@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
+import { API_URL, createApiError } from "./auth.js";
 
 async function request(path, options = {}) {
   const accessToken = localStorage.getItem("accessToken");
@@ -15,9 +15,7 @@ async function request(path, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const error = new Error(data.message || "Erro ao conectar com o servidor");
-    error.data = data;
-    throw error;
+    throw createApiError(response, data, "Erro ao conectar com o servidor");
   }
 
   return data;

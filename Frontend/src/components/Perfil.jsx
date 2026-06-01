@@ -21,7 +21,7 @@ const emptyProfile = {
 function Perfil({ activePage, onNavigate }) {
   const [profile, setProfile] = useState(emptyProfile)
   const [formData, setFormData] = useState(emptyProfile)
-  const [isEditing, setIsEditing] = useState(false)
+  const [editingField, setEditingField] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isPhotoSaving, setIsPhotoSaving] = useState(false)
@@ -66,9 +66,14 @@ function Perfil({ activePage, onNavigate }) {
     setFormData((current) => ({ ...current, [name]: value }))
   }
 
-  function handleCancel() {
-    setFormData(profile)
-    setIsEditing(false)
+  function handleEditField(fieldName) {
+    setEditingField(fieldName)
+    setMessage("")
+  }
+
+  function handleCancelField(fieldName) {
+    setFormData((current) => ({ ...current, [fieldName]: profile[fieldName] }))
+    setEditingField(null)
     setMessage("")
   }
 
@@ -89,7 +94,7 @@ function Perfil({ activePage, onNavigate }) {
 
       setProfile(nextProfile)
       setFormData(nextProfile)
-      setIsEditing(false)
+      setEditingField(null)
       setMessage("Perfil atualizado com sucesso.")
     } catch (error) {
       setMessage(error.message)
@@ -248,43 +253,51 @@ function Perfil({ activePage, onNavigate }) {
                 <label className="mb-1 block text-[12px] font-black text-[#8c9b3b]" htmlFor={field.name}>
                   {field.label}
                 </label>
-                <input
-                  className="h-8 w-full rounded-sm bg-white px-3 text-[12px] font-bold text-[#8a551f] outline-none disabled:opacity-80"
-                  disabled={!isEditing || isLoading || isSaving}
-                  id={field.name}
-                  name={field.name}
-                  onChange={handleChange}
-                  required={field.required}
-                  type={field.type}
-                  value={formData[field.name]}
-                />
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <input
+                    className="h-8 w-full rounded-sm bg-white px-3 text-[12px] font-bold text-[#8a551f] outline-none disabled:opacity-80"
+                    disabled={editingField !== field.name || isLoading || isSaving}
+                    id={field.name}
+                    name={field.name}
+                    onChange={handleChange}
+                    required={field.required}
+                    type={field.type}
+                    value={formData[field.name]}
+                  />
+
+                  {editingField === field.name ? (
+                    <div className="grid grid-cols-2 gap-2 sm:flex">
+                      <button
+                        className="h-8 rounded-sm bg-[#fbe7c6] px-4 text-[12px] font-black text-[#8a551f] disabled:opacity-70"
+                        disabled={isSaving}
+                        onClick={() => handleCancelField(field.name)}
+                        type="button"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        className="h-8 rounded-sm bg-[#b2c43f] px-4 text-[12px] font-black text-[#8a551f] disabled:opacity-70"
+                        disabled={isSaving}
+                        type="submit"
+                      >
+                        {isSaving ? "Salvando..." : "Salvar"}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="h-8 rounded-sm bg-[#fbe7c6] px-4 text-[12px] font-black text-[#a46522] disabled:opacity-70"
+                      disabled={isLoading || isSaving || Boolean(editingField)}
+                      onClick={() => handleEditField(field.name)}
+                      type="button"
+                    >
+                      Editar
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
 
             {message && <p className="text-[12px] font-bold text-[#8a551f]">{message}</p>}
-
-            <div className="flex flex-wrap justify-end gap-3 pt-2">
-              {isEditing && (
-                <button
-                  className="h-8 rounded-sm bg-[#fbe7c6] px-6 text-[12px] font-black text-[#8a551f]"
-                  disabled={isSaving}
-                  onClick={handleCancel}
-                  type="button"
-                >
-                  Cancelar
-                </button>
-              )}
-              <button
-                className="h-8 rounded-sm bg-[#b2c43f] px-6 text-[12px] font-black text-[#8a551f] disabled:opacity-70"
-                disabled={isLoading || isSaving}
-                onClick={() => {
-                  if (!isEditing) setIsEditing(true)
-                }}
-                type={isEditing ? "submit" : "button"}
-              >
-                {isSaving ? "Salvando..." : isEditing ? "Salvar" : "Editar"}
-              </button>
-            </div>
           </form>
         </section>
       </section>

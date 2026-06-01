@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { login, register } from "../services/auth.js"
+import { useCallback, useEffect, useState } from "react"
+import { getCurrentUser, isUnauthorizedError, login, register } from "../services/auth.js"
 import AdminBlog from "./AdminBlog.jsx"
 import AdminEquipes from "./AdminEquipes.jsx"
 import AdminGraficoEquipe from "./AdminGraficoEquipe.jsx"
@@ -33,6 +33,45 @@ function Home() {
       window.history.replaceState(null, "", window.location.pathname + window.location.search)
     }
   }
+
+  const handleInvalidSession = useCallback(() => {
+    localStorage.removeItem("accessToken")
+    setAuthModal(null)
+    setAuthMessage("Sua sessao expirou. Faca login novamente.")
+    setActivePage("landing")
+    clearRouteHash()
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener("auth:unauthorized", handleInvalidSession)
+
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleInvalidSession)
+    }
+  }, [handleInvalidSession])
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken")
+    if (!accessToken) return
+
+    let ignore = false
+
+    async function validateSession() {
+      try {
+        await getCurrentUser(accessToken)
+      } catch (error) {
+        if (!ignore && isUnauthorizedError(error)) {
+          handleInvalidSession()
+        }
+      }
+    }
+
+    validateSession()
+
+    return () => {
+      ignore = true
+    }
+  }, [handleInvalidSession])
 
   function handleLogout() {
     localStorage.removeItem("accessToken")
