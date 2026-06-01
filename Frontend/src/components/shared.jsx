@@ -14,6 +14,7 @@ const menuItems = [
 const adminMenuItems = [
   { icon: "home", label: "Inicio", page: "admin-inicio" },
   { icon: "team", label: "Equipes", page: "admin-equipes" },
+  { icon: "users", label: "Usuarios", page: "admin-usuarios" },
   { icon: "chart", label: "Grafico", page: "admin-grafico" },
   { icon: "goals", label: "Metas", page: "admin-metas" },
   { icon: "blog", label: "Blog", page: "admin-blog" },
@@ -47,8 +48,17 @@ export function Icon({ name, className = "" }) {
     team: (
       <path d="M6.2 1.8h3.6l1.8 3.1-1.8 3.1H6.2L4.4 4.9l1.8-3.1Zm.7 1.2-1.1 1.9 1.1 1.9h2.2l1.1-1.9L9.1 3H6.9ZM2.8 8.5h3l1.5 2.6-1.5 2.6h-3l-1.5-2.6 1.5-2.6Zm6.9 0h3l1.5 2.6-1.5 2.6h-3l-1.5-2.6 1.5-2.6Z" />
     ),
+    users: (
+      <path d="M5.6 7.2a2.7 2.7 0 1 0 0-5.4 2.7 2.7 0 0 0 0 5.4Zm0-1.1a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2Zm5.1 1a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Zm0-1.1a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2ZM5.6 8.1c-2.8 0-4.8 1.5-4.8 3.4v1.1h9.6v-1.1c0-1.9-2-3.4-4.8-3.4Zm-3.6 3.4c.1-1.2 1.6-2.3 3.6-2.3s3.5 1.1 3.6 2.3H2Zm8.8-3.2c-.5 0-1 .1-1.4.2.5.3.9.7 1.2 1.2h.2c1.6 0 2.8.8 2.9 1.8h-2.2v1.1H15v-1.1c0-1.8-1.8-3.2-4.2-3.2Z" />
+    ),
     chart: (
       <path d="M2.2 13.2h11.6v1H2.2v-1Zm1.1-4.4h2.2v3.4H3.3V8.8Zm3.6-5.2h2.2v8.6H6.9V3.6Zm3.6 3.2h2.2v5.4h-2.2V6.8Z" />
+    ),
+    sun: (
+      <path d="M7.5 1h1v2h-1V1Zm0 12h1v2h-1v-2ZM1 7.5h2v1H1v-1Zm12 0h2v1h-2v-1ZM3 2.3 4.4 3.7l-.7.7L2.3 3 3 2.3Zm9.3 9.3 1.4 1.4-.7.7-1.4-1.4.7-.7Zm.7-9.3.7.7-1.4 1.4-.7-.7L13 2.3ZM3.7 11.6l.7.7L3 13.7l-.7-.7 1.4-1.4ZM8 4.6A3.4 3.4 0 1 1 8 11.4 3.4 3.4 0 0 1 8 4.6Zm0 1.1A2.3 2.3 0 1 0 8 10.3 2.3 2.3 0 0 0 8 5.7Z" />
+    ),
+    moon: (
+      <path d="M11.7 10.8A5.6 5.6 0 0 1 5.2 4.3 4.7 4.7 0 1 0 11.7 10.8ZM8.2 1.2a6 6 0 1 0 6.6 6.6A4.5 4.5 0 0 1 8.2 1.2Z" />
     ),
     plus: <path d="M7.4 2h1.2v5.4H14v1.2H8.6V14H7.4V8.6H2V7.4h5.4V2Z" />,
     trash: (
@@ -98,6 +108,32 @@ export function HoneyPoints({ value, label = "Pontos de Mel", compact = false, v
   )
 }
 
+export function ThemeToggle({ theme = "light", onToggle, compact = false, className = "" }) {
+  const isDark = theme === "dark"
+  const label = isDark ? "Modo claro" : "Modo escuro"
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`theme-toggle inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[#fbe7c6] px-3 text-[12px] font-black text-[#8a551f] shadow-sm transition-colors ${className}`}
+      aria-label={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
+      aria-pressed={isDark}
+    >
+      <span className="flex h-6 w-11 items-center rounded-full bg-[#9a5a1e]/20 p-0.5">
+        <span
+          className={`flex h-5 w-5 items-center justify-center rounded-full bg-white text-[#9a5a1e] shadow-sm transition-transform ${
+            isDark ? "translate-x-5" : "translate-x-0"
+          }`}
+        >
+          <Icon className="h-3.5 w-3.5" name={isDark ? "moon" : "sun"} />
+        </span>
+      </span>
+      {!compact && <span>{label}</span>}
+    </button>
+  )
+}
+
 export function ProgressBar({ left, right }) {
   return (
     <div className="h-2.5 overflow-hidden rounded-full bg-[#e8dec6]">
@@ -109,13 +145,15 @@ export function ProgressBar({ left, right }) {
   )
 }
 
-export function Sidebar({ activePage, onNavigate }) {
+export function Sidebar({ activePage, onNavigate, theme, onToggleTheme }) {
   return (
     <aside className="hidden flex-col rounded-none bg-white px-5 py-5 md:flex md:min-h-screen">
       <Logo />
       <p className="mt-3 max-w-[150px] text-[14px] font-bold leading-tight text-[#658a30]">
         Foque, descanse, seja sua melhor versão!
       </p>
+
+      <ThemeToggle theme={theme} onToggle={onToggleTheme} className="mt-4 w-full" />
 
       <nav className="mt-8 flex flex-wrap gap-3 md:block md:space-y-3">
         {menuItems.map((item) => {
@@ -159,13 +197,14 @@ export function Sidebar({ activePage, onNavigate }) {
   )
 }
 
-export function AdminSidebar({ activePage, onNavigate }) {
+export function AdminSidebar({ activePage, onNavigate, theme, onToggleTheme }) {
   return (
     <aside className="hidden flex-col rounded-none bg-white px-5 py-5 md:flex md:min-h-screen">
       <Logo />
       <p className="mt-3 max-w-[150px] text-[14px] font-bold leading-tight text-[#658a30]">
         Painel visual para cuidar das equipes.
       </p>
+      <ThemeToggle theme={theme} onToggle={onToggleTheme} className="mt-4 w-full" />
 
       <nav className="mt-8 flex flex-wrap gap-3 md:block md:space-y-3">
         {adminMenuItems.map((item) => {
@@ -209,7 +248,7 @@ export function AdminSidebar({ activePage, onNavigate }) {
   )
 }
 
-function MobileTopBar({ admin = false }) {
+function MobileTopBar({ admin = false, theme, onToggleTheme }) {
   return (
     <header className="sticky top-0 z-30 mb-2 flex items-center justify-between gap-3 rounded-b-lg bg-white px-4 py-3 shadow-sm md:hidden">
       <div className="min-w-0">
@@ -218,20 +257,23 @@ function MobileTopBar({ admin = false }) {
           {admin ? "Painel visual do administrador." : "Foque, descanse, seja sua melhor versão!"}
         </p>
       </div>
-      {admin ? (
-        <span className="rounded-lg bg-[#fbe7c6] px-3 py-2 text-center text-[11px] font-black text-[#8a551f]">
-          Admin
-        </span>
-      ) : (
-        <HoneyPoints value="250" compact className="shrink-0 px-2 py-2 [&_img]:h-7 [&_img]:w-7 [&_strong]:text-sm [&_span]:text-[10px]" />
-      )}
+      <div className="flex shrink-0 items-center gap-2">
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact className="w-16 px-2" />
+        {admin ? (
+          <span className="rounded-lg bg-[#fbe7c6] px-3 py-2 text-center text-[11px] font-black text-[#8a551f]">
+            Admin
+          </span>
+        ) : (
+          <HoneyPoints value="250" compact className="px-2 py-2 [&_img]:h-7 [&_img]:w-7 [&_strong]:text-sm [&_span]:text-[10px]" />
+        )}
+      </div>
     </header>
   )
 }
 
 function MobileNav({ activePage, onNavigate, admin = false }) {
   const items = admin ? adminMenuItems : menuItems
-  const gridClass = "grid-cols-5"
+  const gridClass = admin ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"
 
   return (
     <nav
@@ -262,16 +304,16 @@ function MobileNav({ activePage, onNavigate, admin = false }) {
   )
 }
 
-export function AppFrame({ activePage, onNavigate, children, rightColumn, bare = false }) {
+export function AppFrame({ activePage, onNavigate, children, rightColumn, bare = false, theme, onToggleTheme }) {
   if (bare) {
-    return <main className="min-h-screen bg-[#e9e9e9] p-2 font-sans text-[#5c3717]">{children}</main>
+    return <main className="theme-scope min-h-screen bg-[#e9e9e9] p-2 font-sans text-[#5c3717]" data-theme={theme}>{children}</main>
   }
 
   return (
-    <main className="min-h-screen bg-[#e9e9e9] p-2 pb-24 font-sans text-[#5c3717] md:py-2 md:pl-0 md:pr-2 md:pb-2">
-      <MobileTopBar />
+    <main className="theme-scope min-h-screen bg-[#e9e9e9] p-2 pb-24 font-sans text-[#5c3717] md:py-2 md:pl-0 md:pr-2 md:pb-2" data-theme={theme}>
+      <MobileTopBar theme={theme} onToggleTheme={onToggleTheme} />
       <div className="grid w-full gap-3 md:min-h-[calc(100vh-1rem)] md:grid-cols-[220px_minmax(0,1fr)_220px] xl:grid-cols-[260px_minmax(0,1fr)_250px]">
-        <Sidebar activePage={activePage} onNavigate={onNavigate} />
+        <Sidebar activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme} />
         {children}
         {rightColumn}
       </div>
@@ -280,12 +322,12 @@ export function AppFrame({ activePage, onNavigate, children, rightColumn, bare =
   )
 }
 
-export function AdminFrame({ activePage, onNavigate, children }) {
+export function AdminFrame({ activePage, onNavigate, children, theme, onToggleTheme }) {
   return (
-    <main className="min-h-screen bg-[#e9e9e9] p-2 pb-24 font-sans text-[#5c3717] md:py-2 md:pl-0 md:pr-2 md:pb-2">
-      <MobileTopBar admin />
+    <main className="theme-scope min-h-screen bg-[#e9e9e9] p-2 pb-36 font-sans text-[#5c3717] md:py-2 md:pl-0 md:pr-2 md:pb-2" data-theme={theme}>
+      <MobileTopBar admin theme={theme} onToggleTheme={onToggleTheme} />
       <div className="grid w-full gap-3 md:min-h-[calc(100vh-1rem)] md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
-        <AdminSidebar activePage={activePage} onNavigate={onNavigate} />
+        <AdminSidebar activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme} />
         {children}
       </div>
       <MobileNav activePage={activePage} onNavigate={onNavigate} admin />

@@ -27,7 +27,7 @@ function formatSeconds(totalSeconds) {
   return `${minutes}:${seconds}`
 }
 
-function Inicio({ activePage, onNavigate }) {
+function Inicio({ activePage, onNavigate, theme, onToggleTheme }) {
   const [timer, setTimer] = useState(null)
   const [timerMode, setTimerMode] = useState("stopwatch")
   const [focusMinutes, setFocusMinutes] = useState(25)
@@ -147,7 +147,7 @@ function Inicio({ activePage, onNavigate }) {
   }
 
   return (
-    <AppFrame activePage={activePage} onNavigate={onNavigate}>
+    <AppFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="inicio-layout">
         <section className="inicio-hero relative min-h-[170px] overflow-hidden rounded-lg bg-white shadow-sm sm:min-h-[220px]">
           <div className="absolute left-5 top-7 z-10 h-24 w-28 -rotate-12 rounded-md bg-[#fbfaf7] p-3 shadow-md sm:left-9 sm:top-9 sm:h-28 sm:w-32 sm:p-4">

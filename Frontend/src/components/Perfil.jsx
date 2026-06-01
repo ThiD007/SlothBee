@@ -18,7 +18,7 @@ const emptyProfile = {
   foto_perfil: "",
 }
 
-function Perfil({ activePage, onNavigate }) {
+function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   const [profile, setProfile] = useState(emptyProfile)
   const [formData, setFormData] = useState(emptyProfile)
   const [isEditing, setIsEditing] = useState(false)
@@ -159,6 +159,8 @@ function Perfil({ activePage, onNavigate }) {
     <AppFrame
       activePage={activePage}
       onNavigate={onNavigate}
+      theme={theme}
+      onToggleTheme={onToggleTheme}
       rightColumn={
         <aside className="grid gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-rows-[minmax(160px,1fr)_auto_auto_auto]">
           <section className="relative overflow-hidden rounded-lg bg-white shadow-sm">

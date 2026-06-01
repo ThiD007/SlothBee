@@ -40,6 +40,14 @@ export function getCurrentUser(accessToken) {
   })
 }
 
+export function getUsers(accessToken) {
+  return request("/users", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+}
+
 export function updateCurrentUser(accessToken, userData) {
   return request("/users/me", {
     method: "PUT",

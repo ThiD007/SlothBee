@@ -63,9 +63,9 @@ function AdminPostCard({ post }) {
   )
 }
 
-function AdminBlog({ activePage, onNavigate }) {
+function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
   return (
-    <AdminFrame activePage={activePage} onNavigate={onNavigate}>
+    <AdminFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid gap-3 lg:min-h-[calc(100vh-1rem)] xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="grid content-start gap-3">
           <header className="rounded-lg bg-[#fffdf5] p-5 shadow-sm">

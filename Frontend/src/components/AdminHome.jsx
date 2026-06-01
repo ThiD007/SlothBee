@@ -37,9 +37,9 @@ function OverviewCard({ card }) {
   )
 }
 
-function AdminHome({ activePage, onNavigate }) {
+function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
   return (
-    <AdminFrame activePage={activePage} onNavigate={onNavigate}>
+    <AdminFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-rows-[minmax(230px,1fr)_auto_1fr]">
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
           <section className="relative grid min-h-[250px] overflow-hidden rounded-lg bg-white p-5 shadow-sm sm:block sm:p-0">

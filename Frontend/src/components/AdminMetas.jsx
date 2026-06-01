@@ -12,7 +12,7 @@ import { AdminFrame, Icon } from "./shared.jsx"
 
 const emptyGoalForm = { text: "", points: 10 }
 
-function AdminMetas({ activePage, onNavigate }) {
+function AdminMetas({ activePage, onNavigate, theme, onToggleTheme }) {
   const [goals, setGoals] = useState([])
   const [form, setForm] = useState(emptyGoalForm)
   const [editingGoalId, setEditingGoalId] = useState(null)
@@ -64,7 +64,7 @@ function AdminMetas({ activePage, onNavigate }) {
   }
 
   return (
-    <AdminFrame activePage={activePage} onNavigate={onNavigate}>
+    <AdminFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid gap-3 lg:min-h-[calc(100vh-1rem)] xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="grid content-start gap-3">
           <header className="rounded-lg bg-white p-5 shadow-sm">

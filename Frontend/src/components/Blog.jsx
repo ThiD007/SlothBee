@@ -185,11 +185,11 @@ function BlogList({ onRead }) {
   )
 }
 
-function Blog({ activePage, onNavigate }) {
+function Blog({ activePage, onNavigate, theme, onToggleTheme }) {
   const [selectedPost, setSelectedPost] = useState(null)
 
   return (
-    <AppFrame activePage={activePage} onNavigate={onNavigate}>
+    <AppFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       {selectedPost ? (
         <BlogConteudo post={selectedPost} onBack={() => setSelectedPost(null)} />
       ) : (

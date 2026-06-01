@@ -51,9 +51,9 @@ function TeamCard({ team, onOpenChart }) {
   )
 }
 
-function AdminEquipes({ activePage, onNavigate }) {
+function AdminEquipes({ activePage, onNavigate, theme, onToggleTheme }) {
   return (
-    <AdminFrame activePage={activePage} onNavigate={onNavigate}>
+    <AdminFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-rows-[auto_1fr]">
         <header className="grid gap-3 rounded-lg bg-white p-5 shadow-sm xl:grid-cols-[1fr_auto] xl:items-center">
           <div className="flex items-center gap-4">

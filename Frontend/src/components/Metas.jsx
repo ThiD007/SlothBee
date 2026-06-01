@@ -65,7 +65,7 @@ function GoalGroup({ title, goals, editable, onToggle, onEdit, onDelete }) {
   )
 }
 
-function Metas({ activePage, onNavigate }) {
+function Metas({ activePage, onNavigate, theme, onToggleTheme }) {
   const [dailyGoals, setDailyGoals] = useState([])
   const [careGoals, setCareGoals] = useState([])
   const [honeyPoints, setHoneyPoints] = useState(0)
@@ -137,7 +137,7 @@ function Metas({ activePage, onNavigate }) {
   }
 
   return (
-    <AppFrame activePage={activePage} onNavigate={onNavigate}>
+    <AppFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid min-h-[calc(100vh-1rem)] gap-4 rounded-sm bg-[#f7f7f7] p-5 shadow-sm lg:col-span-2 lg:grid-rows-[1fr_auto]">
         <div className="grid content-start gap-4 xl:grid-cols-2">
           <GoalGroup title="Metas de hoje" goals={dailyGoals} onToggle={handleToggle} />

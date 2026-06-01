@@ -1,16 +1,19 @@
 import florzinha from "../public/slothBeeFlorzinha.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
-import { Icon, Logo } from "./shared.jsx"
+import { Icon, Logo, ThemeToggle } from "./shared.jsx"
 
-function LandingPage({ onOpenLogin }) {
+function LandingPage({ onOpenLogin, theme, onToggleTheme }) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f3f3f3] font-sans text-[#5c3717]">
+    <main className="theme-scope relative min-h-screen overflow-hidden bg-[#f3f3f3] font-sans text-[#5c3717]" data-theme={theme}>
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-6 sm:px-10">
-        <header className="flex flex-wrap items-center gap-4">
-          <Logo />
-          <p className="text-[13px] font-black leading-tight text-[#5f8f34]">
+        <header className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <Logo />
+            <p className="text-[13px] font-black leading-tight text-[#5f8f34]">
             Foque, descanse, seja sua melhor versão!
-          </p>
+            </p>
+          </div>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </header>
 
         <img src={florzinha} alt="" className="absolute right-260 top-15 h-20 w-20 object-cover" />

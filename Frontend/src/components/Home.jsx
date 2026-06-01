@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { login, register } from "../services/auth.js"
 import AdminBlog from "./AdminBlog.jsx"
 import AdminEquipes from "./AdminEquipes.jsx"
 import AdminGraficoEquipe from "./AdminGraficoEquipe.jsx"
 import AdminHome from "./AdminHome.jsx"
 import AdminMetas from "./AdminMetas.jsx"
+import AdminUsuarios from "./AdminUsuarios.jsx"
 import Blog from "./Blog.jsx"
 import Cadastro from "./Cadastro.jsx"
 import Inicio from "./inicio.jsx"
@@ -13,7 +14,7 @@ import Login from "./Login.jsx"
 import Metas from "./Metas.jsx"
 import Perfil from "./Perfil.jsx"
 
-const adminPages = new Set(["admin-inicio", "admin-equipes", "admin-grafico", "admin-metas", "admin-blog"])
+const adminPages = new Set(["admin-inicio", "admin-equipes", "admin-usuarios", "admin-grafico", "admin-metas", "admin-blog"])
 
 function getInitialPage() {
   const hashPage = window.location.hash.replace("#", "")
@@ -22,11 +23,27 @@ function getInitialPage() {
   return localStorage.getItem("accessToken") ? "inicio" : "landing"
 }
 
+function getInitialTheme() {
+  const savedTheme = localStorage.getItem("theme")
+  if (savedTheme === "dark" || savedTheme === "light") return savedTheme
+  return "light"
+}
+
 function Home() {
   const [activePage, setActivePage] = useState(getInitialPage)
+  const [theme, setTheme] = useState(getInitialTheme)
   const [authModal, setAuthModal] = useState(null)
   const [authMessage, setAuthMessage] = useState("")
   const [isAuthLoading, setIsAuthLoading] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme)
+    document.documentElement.dataset.theme = theme
+  }, [theme])
+
+  function handleToggleTheme() {
+    setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"))
+  }
 
   function clearRouteHash() {
     if (window.location.hash) {
@@ -98,7 +115,7 @@ function Home() {
   if (activePage === "landing") {
     return (
       <>
-        <LandingPage onOpenLogin={() => openAuthModal("login")} />
+        <LandingPage onOpenLogin={() => openAuthModal("login")} theme={theme} onToggleTheme={handleToggleTheme} />
 
         {authModal === "login" && (
           <Login
@@ -126,10 +143,13 @@ function Home() {
   const pageProps = {
     activePage,
     onNavigate: handleNavigate,
+    theme,
+    onToggleTheme: handleToggleTheme,
   }
 
   if (activePage === "admin-inicio") return <AdminHome {...pageProps} />
   if (activePage === "admin-equipes") return <AdminEquipes {...pageProps} />
+  if (activePage === "admin-usuarios") return <AdminUsuarios {...pageProps} />
   if (activePage === "admin-grafico") return <AdminGraficoEquipe {...pageProps} />
   if (activePage === "admin-metas") return <AdminMetas {...pageProps} />
   if (activePage === "admin-blog") return <AdminBlog {...pageProps} />
