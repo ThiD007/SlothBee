@@ -1,8 +1,10 @@
+import { useEffect, useMemo, useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { finishTimer, getActiveTimer, startTimer } from "../services/timer.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
 
 const weeklyPoints = [
@@ -16,7 +18,125 @@ const weeklyPoints = [
   [620, 76],
 ]
 
+function formatSeconds(totalSeconds) {
+  const safeSeconds = Math.max(0, totalSeconds)
+  const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, "0")
+  const seconds = String(safeSeconds % 60).padStart(2, "0")
+
+  return `${minutes}:${seconds}`
+}
+
 function Inicio({ activePage, onNavigate }) {
+  const [timer, setTimer] = useState(null)
+  const [timerMode, setTimerMode] = useState("stopwatch")
+  const [focusMinutes, setFocusMinutes] = useState(25)
+  const [now, setNow] = useState(0)
+  const [timerMessage, setTimerMessage] = useState("")
+  const [isTimerLoading, setIsTimerLoading] = useState(false)
+
+  useEffect(() => {
+    let ignore = false
+
+    async function loadActiveTimer() {
+      try {
+        const data = await getActiveTimer()
+        if (!ignore) setTimer(data.timer)
+      } catch (error) {
+        if (!ignore) setTimerMessage(error.message)
+      }
+    }
+
+    loadActiveTimer()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  useEffect(() => {
+    setNow(Date.now())
+    const interval = window.setInterval(() => setNow(Date.now()), 1000)
+
+    return () => window.clearInterval(interval)
+  }, [])
+
+  const currentSeconds = useMemo(() => {
+    if (!timer) return 0
+
+    if (timer.status === "finished") {
+      return timer.mode === "countdown" ? 0 : timer.elapsedSeconds
+    }
+
+    if (!now) return timer.mode === "countdown" ? timer.durationSeconds : timer.elapsedSeconds
+
+    const startedAt = new Date(timer.startedAt).getTime()
+    const elapsed = Math.max(0, Math.floor((now - startedAt) / 1000))
+
+    if (timer.mode === "countdown") {
+      return Math.max(0, timer.durationSeconds - elapsed)
+    }
+
+    return elapsed
+  }, [now, timer])
+
+  useEffect(() => {
+    if (!timer || timer.status !== "active" || timer.mode !== "countdown" || currentSeconds > 0 || isTimerLoading) return
+
+    async function finishCountdown() {
+      try {
+        setIsTimerLoading(true)
+        const data = await finishTimer(timer.id)
+        setTimer(data.timer)
+        setTimerMessage("Sessao de foco finalizada")
+        window.alert("Tempo finalizado! Hora de descansar.")
+      } catch (error) {
+        setTimerMessage(error.message)
+      } finally {
+        setIsTimerLoading(false)
+      }
+    }
+
+    finishCountdown()
+  }, [currentSeconds, isTimerLoading, timer])
+
+  async function handleStartTimer() {
+    try {
+      setIsTimerLoading(true)
+      setTimerMessage("")
+      const data = await startTimer({
+        mode: timerMode,
+        durationSeconds: timerMode === "countdown" ? focusMinutes * 60 : null,
+      })
+      setTimer(data.timer)
+    } catch (error) {
+      setTimer(error.data?.timer || null)
+      setTimerMessage(error.message)
+    } finally {
+      setIsTimerLoading(false)
+    }
+  }
+
+  async function handleFinishTimer() {
+    if (!timer) return
+
+    try {
+      setIsTimerLoading(true)
+      setTimerMessage("")
+      const data = await finishTimer(timer.id)
+      setTimer(data.timer)
+      setTimerMessage("Sessao de foco finalizada")
+    } catch (error) {
+      setTimerMessage(error.message)
+    } finally {
+      setIsTimerLoading(false)
+    }
+  }
+
+  function handleNewTimer() {
+    setTimer(null)
+    setTimerMessage("")
+  }
+
   return (
     <AppFrame activePage={activePage} onNavigate={onNavigate}>
       <section className="inicio-layout">
@@ -40,19 +160,80 @@ function Inicio({ activePage, onNavigate }) {
             className="flex h-full items-center justify-center [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
           />
 
-          <section className="flex min-h-[190px] flex-col items-center justify-between rounded-lg bg-white px-4 py-4 text-center shadow-sm">
-            <div className="flex items-center justify-center gap-1 text-[11px] font-extrabold leading-tight text-[#8d641e] xl:text-[12px]">
-              <Icon className="h-7 w-7 shrink-0 text-[#9dbb35]" name="timer" />
+          <section className="flex min-h-[268px] flex-col items-center gap-2 rounded-lg bg-white px-4 py-4 text-center shadow-sm">
+            <div className="flex items-center justify-center gap-1 text-[11px] font-extrabold leading-tight text-[#8d641e]">
+              <Icon className="h-6 w-6 shrink-0 text-[#9dbb35]" name="timer" />
               Temporizador de foco
             </div>
-            <div className="my-3 text-5xl font-black leading-none text-black xl:text-6xl">00:00</div>
-            <span className="mx-auto inline-flex rounded-full bg-[#eee5bf] px-5 py-2 text-[10px] font-bold text-[#957334] xl:text-[11px]">
-              Sessão de foco
+            <div className="my-1 text-5xl font-black leading-none text-black">
+              {formatSeconds(currentSeconds)}
+            </div>
+
+            {!timer && (
+              <div className="grid w-full gap-2">
+                <div className="grid grid-cols-2 rounded-md bg-[#f7f0d8] p-1">
+                  <button
+                    className={`h-8 rounded text-[10px] font-extrabold transition-colors ${
+                      timerMode === "stopwatch" ? "bg-white text-[#6a431d] shadow-sm" : "text-[#957334]"
+                    }`}
+                    onClick={() => setTimerMode("stopwatch")}
+                    type="button"
+                  >
+                    Cronometro
+                  </button>
+                  <button
+                    className={`h-8 rounded text-[10px] font-extrabold transition-colors ${
+                      timerMode === "countdown" ? "bg-white text-[#6a431d] shadow-sm" : "text-[#957334]"
+                    }`}
+                    onClick={() => setTimerMode("countdown")}
+                    type="button"
+                  >
+                    Zerar
+                  </button>
+                </div>
+
+                {timerMode === "countdown" && (
+                  <label className="grid gap-1 text-left text-[10px] font-bold text-[#8d641e]">
+                    Minutos
+                    <input
+                      className="h-8 rounded-md border border-[#eee5bf] bg-white px-2 text-[12px] font-bold text-[#2f241d]"
+                      min="1"
+                      type="number"
+                      value={focusMinutes}
+                      onChange={(event) => setFocusMinutes(Number(event.target.value))}
+                    />
+                  </label>
+                )}
+              </div>
+            )}
+
+            <span className="mx-auto inline-flex min-h-8 items-center rounded-full bg-[#eee5bf] px-5 text-[10px] font-bold text-[#957334]">
+              {timer?.status === "finished" ? "Sessao finalizada" : "Sessao de foco"}
             </span>
-            <button className="mt-2 flex h-11 w-full max-w-[150px] items-center justify-center gap-2 rounded-md bg-[#a5bd43] text-[11px] font-extrabold text-[#786018] transition-colors hover:bg-[#97ad39]">
-              Iniciar foco
-              <Icon className="h-5 w-5" name="play" />
-            </button>
+
+            {timerMessage && <p className="min-h-4 text-[10px] font-bold leading-tight text-[#8d641e]">{timerMessage}</p>}
+
+            {!timer || timer.status === "finished" ? (
+              <button
+                className="mt-auto flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#a5bd43] text-[11px] font-extrabold text-[#5f4c16] transition-colors hover:bg-[#97ad39] disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isTimerLoading}
+                onClick={timer?.status === "finished" ? handleNewTimer : handleStartTimer}
+                type="button"
+              >
+                {timer?.status === "finished" ? "Novo foco" : "Iniciar foco"}
+                <Icon className="h-5 w-5" name="play" />
+              </button>
+            ) : (
+              <button
+                className="mt-auto flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#eee5bf] text-[11px] font-extrabold text-[#786018] transition-colors hover:bg-[#e3d798] disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isTimerLoading}
+                onClick={handleFinishTimer}
+                type="button"
+              >
+                Finalizar
+                <Icon className="h-5 w-5" name="timer" />
+              </button>
+            )}
           </section>
         </aside>
 

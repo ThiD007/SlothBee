@@ -64,7 +64,7 @@
   .inicio-layout {
     grid-column: span 2;
     grid-template-columns: minmax(0, 1fr) 210px;
-    grid-template-rows: minmax(210px, 250px) 96px 96px;
+    grid-template-rows: minmax(210px, 250px) 112px 96px;
     grid-template-areas:
       "hero side"
       "balance side"

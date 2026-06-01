@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const authRoutes = require("./src/routes/auth.route");
 const userRoutes = require("./src/routes/user.route");
+const timerRoutes = require("./src/routes/timer.route");
 
 const { errorHandler} = require("./src/middlewares/error.middleware");
 
@@ -18,6 +19,7 @@ app.get("/health", (req, res) => res.json({ ok:true}));
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/timers", timerRoutes);
 
 app.use(errorHandler);
 

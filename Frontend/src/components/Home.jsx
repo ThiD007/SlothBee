@@ -29,6 +29,17 @@ function Home() {
   const [isAuthLoading, setIsAuthLoading] = useState(false)
 
   function handleNavigate(page) {
+    if (page === "logout") {
+      localStorage.removeItem("accessToken")
+      setAuthModal(null)
+      setAuthMessage("")
+      setActivePage("landing")
+      if (window.location.hash) {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search)
+      }
+      return
+    }
+
     setActivePage(page)
     if (adminPages.has(page)) {
       window.location.hash = page

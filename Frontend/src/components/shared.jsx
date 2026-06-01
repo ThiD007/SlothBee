@@ -8,6 +8,7 @@ const menuItems = [
   { icon: "profile", label: "Perfil", page: "perfil" },
   { icon: "goals", label: "Metas", page: "metas" },
   { icon: "blog", label: "Blog", page: "blog" },
+  { icon: "logout", label: "Sair", page: "logout" },
 ]
 
 const adminMenuItems = [
@@ -56,6 +57,9 @@ export function Icon({ name, className = "" }) {
     arrowLeft: <path d="M6.9 3.1 2 8l4.9 4.9.8-.8-3.6-3.6H14V7.4H4.1l3.6-3.5-.8-.8Z" />,
     chat: (
       <path d="M3.1 3h9.8c.8 0 1.5.7 1.5 1.5v5.4c0 .8-.7 1.5-1.5 1.5H7.4L4 14v-2.6h-.9c-.8 0-1.5-.7-1.5-1.5V4.5C1.6 3.7 2.3 3 3.1 3Zm0 1.1a.4.4 0 0 0-.4.4v5.4c0 .2.2.4.4.4h2v1.4l1.9-1.4h5.9c.2 0 .4-.2.4-.4V4.5a.4.4 0 0 0-.4-.4H3.1Z" />
+    ),
+    logout: (
+      <path d="M2.2 2.2h6v1.1h-4.9v9.4h4.9v1.1h-6V2.2Zm8.1 2.5 3.4 3.3-3.4 3.3-.8-.8 2-2H6.2V7.5h5.3l-2-2 .8-.8Z" />
     ),
   }
 
@@ -115,19 +119,24 @@ export function Sidebar({ activePage, onNavigate }) {
       <nav className="mt-8 flex flex-wrap gap-3 md:block md:space-y-3">
         {menuItems.map((item) => {
           const isActive = activePage === item.page
+          const isLogout = item.page === "logout"
           return (
             <button
               key={item.label}
               type="button"
               onClick={() => onNavigate(item.page)}
               className={`flex h-8 min-w-32 items-center gap-2 rounded-lg px-3 text-left text-[14px] font-bold transition-colors md:w-full ${
-                isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : "text-[#765126] hover:bg-[#fcfbf9]"
+                isActive
+                  ? "bg-[#f2f1ef] text-[#8b4f1e]"
+                  : isLogout
+                    ? "text-[#9b3d1d] hover:bg-[#fff4ee]"
+                    : "text-[#765126] hover:bg-[#fcfbf9]"
               }`}
             >
               {item.icon === "team" ? (
                 <img src={colmeiaSimboloImg} alt="" className="h-7 w-7 object-cover" />
               ) : (
-                <Icon className="h-6 w-6 text-[#a36922]" name={item.icon} />
+                <Icon className={`h-6 w-6 ${isLogout ? "text-[#b95b2d]" : "text-[#a36922]"}`} name={item.icon} />
               )}
               {item.label}
             </button>
@@ -216,7 +225,7 @@ function MobileTopBar({ admin = false }) {
 
 function MobileNav({ activePage, onNavigate, admin = false }) {
   const items = admin ? adminMenuItems : menuItems
-  const gridClass = admin ? "grid-cols-5" : "grid-cols-4"
+  const gridClass = "grid-cols-5"
 
   return (
     <nav
@@ -224,19 +233,20 @@ function MobileNav({ activePage, onNavigate, admin = false }) {
     >
       {items.map((item) => {
         const isActive = activePage === item.page
+        const isLogout = item.page === "logout"
         return (
           <button
             key={item.label}
             type="button"
             onClick={() => onNavigate(item.page)}
             className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-black leading-none ${
-              isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : "text-[#765126]"
+              isActive ? "bg-[#f2f1ef] text-[#8b4f1e]" : isLogout ? "text-[#9b3d1d]" : "text-[#765126]"
             }`}
           >
             {item.icon === "team" ? (
               <img src={colmeiaSimboloImg} alt="" className="h-5 w-5 object-cover" />
             ) : (
-              <Icon className="h-5 w-5 text-[#a36922]" name={item.icon} />
+              <Icon className={`h-5 w-5 ${isLogout ? "text-[#b95b2d]" : "text-[#a36922]"}`} name={item.icon} />
             )}
             <span>{item.label}</span>
           </button>
