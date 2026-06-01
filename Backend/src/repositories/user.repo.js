@@ -2,22 +2,22 @@ const db = require("../config/db");
 
 async function findByEmail(email) {
     const [rows] = await db.query(
-        "SELECT id, nome, email, senha AS password_hash FROM usuarios WHERE email = ?",
+        "SELECT id, nome, email, telefone, cargo, senha AS password_hash FROM usuarios WHERE email = ?",
         [email]
     );
     return rows[0];
 }
 
-async function createUser(nome, email, senha) {
+async function createUser(nome, email, telefone, cargo, senha) {
     const [result] = await db.query(
-        "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)",
-        [nome, email, senha]
+        "INSERT INTO usuarios (nome, email, telefone, cargo, senha) VALUES (?, ?, ?, ?, ?)",
+        [nome, email, telefone, cargo, senha]
     );
     return result.insertId;
 }
 
 async function findById(id) {
-    const [rows] = await db.query("SELECT id, nome, email FROM usuarios WHERE id = ?",[id]);
+    const [rows] = await db.query("SELECT id, nome, email, telefone, cargo FROM usuarios WHERE id = ?",[id]);
     return rows[0]
 }
 
