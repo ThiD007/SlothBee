@@ -6,19 +6,14 @@ import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
 import { getBalance } from "../services/balance.js"
 import { getHoneyPoints } from "../services/points.js"
-import { finishTimer, getActiveTimer, startTimer } from "../services/timer.js"
+import { finishTimer, getActiveTimer, getTimerSummary, startTimer } from "../services/timer.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
 
-const weeklyPoints = [
-  [76, 132],
-  [154, 56],
-  [238, 108],
-  [324, 68],
-  [400, 92],
-  [500, 34],
-  [584, 92],
-  [620, 76],
-]
+const defaultFocusSummary = {
+  todaySeconds: 0,
+  weekSeconds: 0,
+  dailySeconds: [0, 0, 0, 0, 0, 0, 0],
+}
 
 function formatSeconds(totalSeconds) {
   const safeSeconds = Math.max(0, totalSeconds)
@@ -27,6 +22,16 @@ function formatSeconds(totalSeconds) {
 
   return `${minutes}:${seconds}`
 }
+
+function formatFocusDuration(totalSeconds) {
+  const safeSeconds = Math.max(0, Number(totalSeconds) || 0)
+  const hours = Math.floor(safeSeconds / 3600)
+  const minutes = Math.floor((safeSeconds % 3600) / 60)
+
+  if (hours <= 0) return `${minutes}m`
+  return `${hours}h ${String(minutes).padStart(2, "0")}m`
+}
+
 function getGreeting() {
   const hour = new Date().getHours()
 
@@ -38,6 +43,14 @@ function getGreeting() {
 function getFirstName(user) {
   if (!user?.nome) return ""
   return user.nome.split(" ")[0]
+}
+
+function getStartOfWeek(date) {
+  const start = new Date(date)
+  const dayIndex = (start.getDay() + 6) % 7
+  start.setHours(0, 0, 0, 0)
+  start.setDate(start.getDate() - dayIndex)
+  return start
 }
 
 function Inicio({
@@ -61,6 +74,7 @@ function Inicio({
     completedGoals: 0,
     completedSessions: 0,
   })
+  const [focusSummary, setFocusSummary] = useState(defaultFocusSummary)
   const greeting = getGreeting()
   const firstName = getFirstName(currentUser)
 
@@ -78,6 +92,8 @@ function Inicio({
       try {
         const pointsData = await getHoneyPoints()
         if (!ignore) setHoneyPoints(pointsData.honeyPoints)
+        const summaryData = await getTimerSummary()
+        if (!ignore) setFocusSummary(summaryData.focusSummary || defaultFocusSummary)
       } catch (error) {
         if (!ignore) setTimerMessage(error.message)
       }
@@ -132,6 +148,46 @@ function Inicio({
     return elapsed
   }, [now, timer])
 
+  const liveFocusSummary = useMemo(() => {
+    if (!timer || timer.status !== "active") return focusSummary
+
+    const dailySeconds = [...(focusSummary.dailySeconds || defaultFocusSummary.dailySeconds)]
+    const startedAt = new Date(timer.startedAt)
+    const today = new Date()
+    const startedToday = startedAt.toDateString() === today.toDateString()
+    const startedThisWeek = startedAt >= getStartOfWeek(today)
+
+    if (!startedToday && !startedThisWeek) return focusSummary
+
+    const elapsedSeconds =
+      timer.mode === "countdown" && timer.durationSeconds
+        ? Math.min(currentSeconds === 0 ? timer.durationSeconds : timer.durationSeconds - currentSeconds, timer.durationSeconds)
+        : currentSeconds
+
+    const dayIndex = (startedAt.getDay() + 6) % 7
+    if (startedThisWeek) dailySeconds[dayIndex] = (dailySeconds[dayIndex] || 0) + elapsedSeconds
+
+    return {
+      todaySeconds: focusSummary.todaySeconds + (startedToday ? elapsedSeconds : 0),
+      weekSeconds: focusSummary.weekSeconds + (startedThisWeek ? elapsedSeconds : 0),
+      dailySeconds,
+    }
+  }, [currentSeconds, focusSummary, timer])
+
+  const chartPoints = useMemo(() => {
+    const dailySeconds = liveFocusSummary.dailySeconds || defaultFocusSummary.dailySeconds
+    const maxSeconds = Math.max(3600, ...dailySeconds)
+
+    return dailySeconds.map((seconds, index) => {
+      const x = 76 + index * 84
+      const y = 150 - (Math.max(0, seconds) / maxSeconds) * 126
+      return [x, Math.max(24, Math.min(150, y))]
+    })
+  }, [liveFocusSummary])
+
+  const chartLine = chartPoints.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ")
+  const chartArea = `${chartLine} L${chartPoints[chartPoints.length - 1][0]} 150 L${chartPoints[0][0]} 150 Z`
+
   useEffect(() => {
     if (!timer || timer.status !== "active" || timer.mode !== "countdown" || currentSeconds > 0 || isTimerLoading) return
 
@@ -141,7 +197,11 @@ function Inicio({
         const data = await finishTimer(timer.id)
         setTimer(data.timer)
         setHoneyPoints(data.honeyPoints)
+<<<<<<< HEAD
         await refreshBalance()
+=======
+        setFocusSummary(data.focusSummary || defaultFocusSummary)
+>>>>>>> d7370d6 (alterei o cronometro, agora devo melhorar, pois não salvou o total de foco da semana e de hoje)
         setTimerMessage("Sessão de foco finalizada")
         window.alert("Tempo finalizado! Hora de descansar.")
       } catch (error) {
@@ -180,7 +240,11 @@ function Inicio({
       const data = await finishTimer(timer.id)
       setTimer(data.timer)
       setHoneyPoints(data.honeyPoints)
+<<<<<<< HEAD
       await refreshBalance()
+=======
+      setFocusSummary(data.focusSummary || defaultFocusSummary)
+>>>>>>> d7370d6 (alterei o cronometro, agora devo melhorar, pois não salvou o total de foco da semana e de hoje)
       setTimerMessage("Sessão de foco finalizada")
       if (data.earnedHoneyPoints > 0) {
         setTimerMessage(`Sessão finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
@@ -383,17 +447,18 @@ function Inicio({
                   <line x1="54" x2="620" y1="150" y2="150" />
                 </g>
                 <path
-                  d="M76 132 C100 110 112 55 154 56 C190 57 206 109 238 108 C274 107 290 70 324 68 C364 66 374 94 400 92 C438 90 468 23 500 34 C538 47 560 98 584 92 C600 88 610 80 620 76 L620 150 L76 150 Z"
+                  d={chartArea}
                   fill="url(#progressArea)"
                 />
                 <path
-                  d="M76 132 C100 110 112 55 154 56 C190 57 206 109 238 108 C274 107 290 70 324 68 C364 66 374 94 400 92 C438 90 468 23 500 34 C538 47 560 98 584 92 C600 88 610 80 620 76"
+                  d={chartLine}
                   fill="none"
                   stroke="#7ea34a"
                   strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth="4"
                 />
-                {weeklyPoints.map(([cx, cy]) => (
+                {chartPoints.map(([cx, cy]) => (
                   <circle key={`${cx}-${cy}`} cx={cx} cy={cy} fill="#86a957" r="6" />
                 ))}
                 {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((day, index) => (
@@ -421,10 +486,20 @@ function Inicio({
 
             <div className="flex items-center justify-between gap-4">
               <div className="inicio-sun" aria-hidden="true" />
-              <div className="text-right">
+              <div className="grid gap-2 text-right">
                 <p className="text-[15px] font-black text-[#4d3323]">Total de Foco</p>
-                <strong className="block text-[24px] leading-tight text-[#2f241d]">12h 45m</strong>
-                <span className="text-[14px] font-bold text-[#8f887c]">esta semana</span>
+                <div>
+                  <strong className="block text-[24px] leading-tight text-[#2f241d]">
+                    {formatFocusDuration(liveFocusSummary.todaySeconds)}
+                  </strong>
+                  <span className="text-[14px] font-bold text-[#8f887c]">hoje</span>
+                </div>
+                <div>
+                  <strong className="block text-[24px] leading-tight text-[#2f241d]">
+                    {formatFocusDuration(liveFocusSummary.weekSeconds)}
+                  </strong>
+                  <span className="text-[14px] font-bold text-[#8f887c]">esta semana</span>
+                </div>
               </div>
             </div>
           </div>

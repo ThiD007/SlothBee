@@ -25,6 +25,10 @@ export function getActiveTimer() {
   return request("/timers/active");
 }
 
+export function getTimerSummary() {
+  return request("/timers/summary");
+}
+
 export function startTimer({ mode, durationSeconds }) {
   return request("/timers/start", {
     method: "POST",
