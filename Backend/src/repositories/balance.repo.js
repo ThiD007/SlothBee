@@ -1,27 +1,30 @@
 const db = require("../config/db");
 
 async function getWeeklyBalanceStats(userId) {
-  const [[timerStats]] = await db.query(
+  const timerResult = await db.query(
     `SELECT
        COUNT(*) AS completed_sessions,
-       COALESCE(SUM(TIMESTAMPDIFF(SECOND, iniciado_em, finalizado_em)), 0) AS focus_seconds,
+       COALESCE(SUM(EXTRACT(EPOCH FROM (finalizado_em - iniciado_em))), 0) AS focus_seconds,
        MAX(finalizado_em) AS last_timer_at
      FROM cronometros
-     WHERE usuario_id = ?
+     WHERE usuario_id = $1
        AND status = 'finalizado'
-       AND finalizado_em >= DATE_SUB(NOW(), INTERVAL 7 DAY)`,
+       AND finalizado_em >= NOW() - INTERVAL '7 days'`,
     [userId]
   );
 
-  const [[goalStats]] = await db.query(
+  const goalResult = await db.query(
     `SELECT
        COUNT(*) AS completed_goals,
        MAX(registrado_em) AS last_goal_at
      FROM metas_concluidas
-     WHERE usuario_id = ?
-       AND concluida_em >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)`,
+     WHERE usuario_id = $1
+       AND concluida_em >= CURRENT_DATE - INTERVAL '6 days'`,
     [userId]
   );
+
+  const timerStats = timerResult.rows[0] || {};
+  const goalStats = goalResult.rows[0] || {};
 
   return {
     completedSessions: Number(timerStats.completed_sessions) || 0,
