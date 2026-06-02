@@ -154,6 +154,24 @@ button:disabled {
   background-color: #78904d;
 }
 
+.theme-scope[data-theme="dark"] .inicio-greeting-card {
+  background:
+    linear-gradient(145deg, rgba(94, 64, 39, 0.96), rgba(64, 45, 31, 0.98));
+  border-color: #8d6a45;
+  box-shadow:
+    0 20px 42px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(255, 242, 220, 0.08) inset;
+}
+
+.theme-scope[data-theme="dark"] .inicio-greeting-card p {
+  color: #fff4dd;
+}
+
+.theme-scope[data-theme="dark"] .inicio-greeting-card > span:first-child {
+  background-color: #b8d47a;
+  box-shadow: 0 0 0 4px rgba(184, 212, 122, 0.16);
+}
+
 .theme-scope[data-theme="dark"] [class*="bg-[#b3c843]"],
 .theme-scope[data-theme="dark"] [class*="bg-[#b2c43f]"],
 .theme-scope[data-theme="dark"] [class*="bg-[#a5bd43]"] {

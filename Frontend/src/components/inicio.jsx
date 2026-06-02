@@ -4,6 +4,7 @@ import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { getBalance } from "../services/balance.js"
 import { getHoneyPoints } from "../services/points.js"
 import { finishTimer, getActiveTimer, startTimer } from "../services/timer.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
@@ -45,13 +46,21 @@ function Inicio({
   currentUser,
   theme,
   onToggleTheme,
-}) {  const [timer, setTimer] = useState(null)
+}) {
+  const [timer, setTimer] = useState(null)
   const [timerMode, setTimerMode] = useState("stopwatch")
   const [focusMinutes, setFocusMinutes] = useState(25)
   const [now, setNow] = useState(0)
   const [timerMessage, setTimerMessage] = useState("")
   const [isTimerLoading, setIsTimerLoading] = useState(false)
   const [honeyPoints, setHoneyPoints] = useState(0)
+  const [balance, setBalance] = useState({
+    focus: 0,
+    rest: 100,
+    focusMinutes: 0,
+    completedGoals: 0,
+    completedSessions: 0,
+  })
   const greeting = getGreeting()
   const firstName = getFirstName(currentUser)
 
@@ -62,10 +71,22 @@ function Inicio({
       try {
         const data = await getActiveTimer()
         if (!ignore) setTimer(data.timer)
+      } catch (error) {
+        if (!ignore) setTimerMessage(error.message)
+      }
+
+      try {
         const pointsData = await getHoneyPoints()
         if (!ignore) setHoneyPoints(pointsData.honeyPoints)
       } catch (error) {
         if (!ignore) setTimerMessage(error.message)
+      }
+
+      try {
+        const balanceData = await getBalance()
+        if (!ignore) setBalance(balanceData.balance)
+      } catch (error) {
+        if (!ignore) setBalance((current) => ({ ...current, focus: 0, rest: 100 }))
       }
     }
 
@@ -82,6 +103,15 @@ function Inicio({
 
     return () => window.clearInterval(interval)
   }, [])
+
+  async function refreshBalance() {
+    try {
+      const balanceData = await getBalance()
+      setBalance(balanceData.balance)
+    } catch {
+      setBalance((current) => ({ ...current, focus: 0, rest: 100 }))
+    }
+  }
 
   const currentSeconds = useMemo(() => {
     if (!timer) return 0
@@ -111,6 +141,7 @@ function Inicio({
         const data = await finishTimer(timer.id)
         setTimer(data.timer)
         setHoneyPoints(data.honeyPoints)
+        await refreshBalance()
         setTimerMessage("Sessão de foco finalizada")
         window.alert("Tempo finalizado! Hora de descansar.")
       } catch (error) {
@@ -149,6 +180,7 @@ function Inicio({
       const data = await finishTimer(timer.id)
       setTimer(data.timer)
       setHoneyPoints(data.honeyPoints)
+      await refreshBalance()
       setTimerMessage("Sessão de foco finalizada")
       if (data.earnedHoneyPoints > 0) {
         setTimerMessage(`Sessão finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
@@ -169,8 +201,9 @@ function Inicio({
     <AppFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="inicio-layout">
         <section className="inicio-hero relative min-h-[170px] overflow-hidden rounded-lg bg-white shadow-sm sm:min-h-[220px]">
-          <div className="absolute left-5 top-7 z-10 h-24 w-28 -rotate-12 rounded-md bg-[#fbfaf7] p-3 shadow-md sm:left-9 sm:top-9 sm:h-28 sm:w-32 sm:p-4">
-            <p className="text-[13px] font-black leading-tight text-[#8b4f1e] sm:text-[16px]">
+          <div className="inicio-greeting-card absolute left-5 top-7 z-10 h-28 w-32 -rotate-12 rounded-lg border-2 border-[#f1c66f] bg-[#fff7df] p-3 shadow-[0_16px_34px_rgba(138,85,31,0.22)] sm:left-9 sm:top-9 sm:h-32 sm:w-36 sm:p-4">
+            <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-[#a5bd43] shadow-[0_0_0_4px_rgba(165,189,67,0.18)]" />
+            <p className="pr-3 text-[14px] font-black leading-tight text-[#6f3f15] sm:text-[17px]">
               {greeting}
               {firstName ? (
                 <>
@@ -181,7 +214,7 @@ function Inicio({
                 "!"
               )}
             </p>
-            <span className="mt-5 block text-center text-2xl text-[#5f8f34] sm:mt-6 sm:text-3xl">{"\u2665"}</span>
+            <span className="mt-4 block text-center text-3xl text-[#5f8f34] sm:mt-5 sm:text-4xl">{"\u2665"}</span>
           </div>
 
           <img
@@ -285,19 +318,19 @@ function Inicio({
               <img src={abelhaImg} alt="" className="h-8 w-8 object-cover" />
               <div className="text-left">
                 <p className="text-[12px] font-black text-[#6a431d]">Foco</p>
-                <p className="text-[12px] font-black text-[#e1a11f]">70%</p>
+                <p className="text-[12px] font-black text-[#e1a11f]">{balance.focus}%</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-2">
               <img src={mascoteAlmofadaImg} alt="" className="h-8 w-8 object-cover" />
               <div className="text-left">
                 <p className="text-[12px] font-black text-[#6a431d]">Descanso</p>
-                <p className="text-[12px] font-black text-[#85a834]">30%</p>
+                <p className="text-[12px] font-black text-[#85a834]">{balance.rest}%</p>
               </div>
             </div>
           </div>
           <div className="mt-1.5">
-            <ProgressBar left="70%" right="30%" />
+            <ProgressBar left={`${balance.focus}%`} right={`${balance.rest}%`} />
           </div>
         </section>
 
