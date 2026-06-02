@@ -4,11 +4,13 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function getDaysSince(date) {
-  if (!date) return 7;
+const FOCUS_DECAY_PER_INACTIVE_HOUR = 2;
+
+function getInactiveHoursSince(date) {
+  if (!date) return 168;
 
   const diff = Date.now() - new Date(date).getTime();
-  return clamp(Math.floor(diff / 86400000), 0, 7);
+  return clamp(Math.floor(diff / 3600000), 0, 168);
 }
 
 function buildBalance(stats) {
@@ -21,16 +23,18 @@ function buildBalance(stats) {
   const lastActivityAt = [stats.lastTimerAt, stats.lastGoalAt]
     .filter(Boolean)
     .sort((a, b) => new Date(b) - new Date(a))[0];
-  const inactivityDays = getDaysSince(lastActivityAt);
-  const rest = 100 - focus;
+  const inactiveHours = getInactiveHoursSince(lastActivityAt);
+  const decay = inactiveHours * FOCUS_DECAY_PER_INACTIVE_HOUR;
+  const adjustedFocus = clamp(focus - decay, 0, 100);
+  const rest = 100 - adjustedFocus;
 
   return {
-    focus,
+    focus: adjustedFocus,
     rest,
     focusMinutes,
     completedGoals: stats.completedGoals,
     completedSessions: stats.completedSessions,
-    inactivityDays,
+    inactiveHours,
   };
 }
 
