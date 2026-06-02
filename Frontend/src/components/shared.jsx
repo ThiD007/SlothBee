@@ -8,6 +8,7 @@ const menuItems = [
   { icon: "profile", label: "Perfil", page: "perfil" },
   { icon: "goals", label: "Metas", page: "metas" },
   { icon: "blog", label: "Blog", page: "blog" },
+  { icon: "star", label: "Favoritos", page: "favoritos" },
   { icon: "logout", label: "Sair", page: "logout" },
 ]
 
@@ -34,6 +35,9 @@ export function Icon({ name, className = "" }) {
     ),
     blog: (
       <path d="M2 2.2h12v11.6H2V2.2Zm1 1v9.6h10V3.2H3Zm1.5 2h7v1h-7v-1Zm0 2.4h7v1h-7v-1Zm0 2.4h4.8v1H4.5v-1Z" />
+    ),
+    star: (
+      <path d="m8 1.6 1.8 3.7 4.1.6-3 2.9.7 4.1L8 11l-3.6 1.9.7-4.1-3-2.9 4.1-.6L8 1.6Zm0 2.6-1 2.1-2.3.3 1.7 1.6-.4 2.3 2-1.1 2 1.1-.4-2.3 1.7-1.6-2.3-.3-1-2.1Z" />
     ),
     play: <path d="M5.4 3.4 12.3 8l-6.9 4.6V3.4Z" />,
     timer: (
@@ -279,7 +283,7 @@ function MobileTopBar({ admin = false, theme, onToggleTheme }) {
 
 function MobileNav({ activePage, onNavigate, admin = false }) {
   const items = admin ? adminMenuItems : menuItems
-  const gridClass = admin ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"
+  const gridClass = admin ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-3 sm:grid-cols-6"
 
   return (
     <nav

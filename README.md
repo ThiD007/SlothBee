@@ -1,9 +1,3 @@
- Integrantes: 
- Jasminy Mendes dos Santos
- Thiago Dezevieski da Silva
- Luiza Lima dos Santos
- Yasmim Kriese Santos
-
 # 🦥🐝 SlothBee
 
 O SlothBee é uma plataforma de produtividade e bem-estar digital que ajuda usuários a criarem uma rotina mais equilibrada entre foco, saúde mental e qualidade de vida.
