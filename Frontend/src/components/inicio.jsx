@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
@@ -198,6 +198,14 @@ function Inicio({
 
   const chartLine = chartPoints.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ")
   const chartArea = `${chartLine} L${chartPoints[chartPoints.length - 1][0]} 150 L${chartPoints[0][0]} 150 Z`
+  const liveEarnedHoneyPoints = timer?.status === "active" ? Math.floor(currentSeconds / FOCUS_SECONDS_PER_HONEY_POINT) : 0
+  const liveHoneyPoints = honeyPoints + liveEarnedHoneyPoints
+  const teamFocus = myTeam?.balance?.focus?.percentage ?? 0
+  const teamRest = myTeam?.balance?.rest?.percentage ?? 0
+  const teamFocusColor = myTeam?.balance?.focus?.color || "#f2b52f"
+  const teamRestColor = myTeam?.balance?.rest?.color || "#91ad35"
+  const balanceBar = getBalanceBarValues(balance.focus, balance.rest)
+  const teamBalanceBar = getBalanceBarValues(teamFocus, teamRest)
 
   useEffect(() => {
     if (!timer || timer.status !== "active" || timer.mode !== "countdown" || currentSeconds > 0 || isTimerLoading) return
@@ -456,7 +464,7 @@ function Inicio({
             </div>
 
             <HoneyPoints
-              value={honeyPoints}
+              value={myTeam?.pontos_equipe ?? 0}
               variant="tall"
               className="self-center py-4 sm:h-[82px] [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
             />

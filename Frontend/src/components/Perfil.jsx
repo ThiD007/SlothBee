@@ -10,6 +10,8 @@ import {
 } from "../services/auth.js"
 import { getCompletedGoalsCount } from "../services/goals.js"
 import { getHoneyPoints } from "../services/points.js"
+import { getTimerSummary } from "../services/timer.js"
+import { defaultFocusSummary, formatFocusDuration } from "../utils/focusTime.js"
 import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
 
 const emptyProfile = {
@@ -59,6 +61,28 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
 
         setProfile(nextProfile)
         setFormData(nextProfile)
+
+        const [pointsResult, goalsResult, focusResult] = await Promise.allSettled([
+          getHoneyPoints(),
+          getCompletedGoalsCount(),
+          getTimerSummary(),
+        ])
+        if (pointsResult.status === "fulfilled") {
+          setHoneyPoints(pointsResult.value.honeyPoints || 0)
+        }
+        if (goalsResult.status === "fulfilled") {
+          setCompletedGoals(goalsResult.value.completedGoals || 0)
+        }
+        if (focusResult.status === "fulfilled") {
+          setFocusSummary(focusResult.value.focusSummary || defaultFocusSummary)
+        }
+        if (
+          pointsResult.status === "rejected" ||
+          goalsResult.status === "rejected" ||
+          focusResult.status === "rejected"
+        ) {
+          setMessage("Perfil carregado, mas nao foi possivel carregar todos os indicadores.")
+        }
       } catch (error) {
         setMessage(error.message)
       } finally {
