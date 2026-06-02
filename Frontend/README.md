@@ -1,16 +1,63 @@
-# React + Vite
+# 🦥🐝 SlothBee
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O SlothBee é uma plataforma de produtividade e bem-estar digital que ajuda usuários a criarem uma rotina mais equilibrada entre foco, saúde mental e qualidade de vida.
 
-Currently, two official plugins are available:
+## 📖 Sobre o Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Muitas pessoas enfrentam dificuldades para manter a produtividade sem comprometer seu bem-estar. O SlothBee foi criado para auxiliar estudantes, profissionais e equipes a desenvolverem hábitos saudáveis e manterem o foco no dia a dia.
 
-## React Compiler
+A plataforma oferece ferramentas para organização da rotina, acompanhamento de metas, sessões de foco e conteúdos educativos sobre saúde e autocuidado.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Funcionalidades
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 👤 Cadastro e login de usuários
+- 🎯 Gerenciamento de metas
+- ⏱️ Temporizador de foco
+- 🍯 Sistema de pontos (Honey Points)
+- 📊 Dashboard de produtividade
+- 👥 Gestão de equipes
+- 📝 Blog com conteúdos de autocuidado
+- 🌙 Modo escuro
+- 🔒 Área administrativa
+
+---
+
+## 🎯 Público-Alvo
+
+- Profissionais
+- Empresas
+- Pessoas que desejam melhorar sua rotina e produtividade
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+### Frontend
+- React
+- JavaScript
+- Tailwind
+- Vite
+
+### Backend
+- Node.js
+- Express
+- Bcrypt
+- Jsonwebtoken
+- cors
+- cloudinary
+- dotenv
+- multer
+
+### Banco de Dados
+- MySQL
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### Clone o repositório
+
+```bash
+git clone https://github.com/ThiD007/SlothBee.git
