@@ -8,6 +8,8 @@ import {
   updateCurrentUser,
   updateProfilePhoto,
 } from "../services/auth.js"
+import { getCompletedGoalsCount } from "../services/goals.js"
+import { getHoneyPoints } from "../services/points.js"
 import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
 
 const emptyProfile = {
@@ -26,8 +28,11 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isPhotoSaving, setIsPhotoSaving] = useState(false)
+  const [honeyPoints, setHoneyPoints] = useState(0)
+  const [completedGoals, setCompletedGoals] = useState(0)
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState("")
+  const [focusSummary, setFocusSummary] = useState(defaultFocusSummary)
   const fileInputRef = useRef(null)
 
   const accessToken = useMemo(() => localStorage.getItem("accessToken"), [])
@@ -191,7 +196,9 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
             <div className="flex items-center justify-center gap-3">
               <Icon className="h-10 w-10 text-[#b2761d]" name="timer" />
               <div className="text-center leading-tight">
-                <strong className="block text-base font-black text-[#2f261d]">2h 14min</strong>
+                <strong className="block text-base font-black text-[#2f261d]">
+                  {formatFocusDuration(focusSummary.todaySeconds, { longMinutes: true })}
+                </strong>
                 <span className="text-[10px] font-bold text-[#8a551f]">Foco de hoje</span>
               </div>
             </div>
@@ -203,13 +210,13 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
                 ◉
               </span>
               <div className="text-center leading-tight">
-                <strong className="block text-base font-black text-[#2f261d]">17</strong>
-                <span className="text-[10px] font-bold text-[#8a551f]">Metas cumpridas</span>
+                <strong className="block text-base font-black text-[#2f261d]">{completedGoals}</strong>
+                <span className="text-[10px] font-bold text-[#8a551f]">Metas cumpridas do dia</span>
               </div>
             </div>
           </section>
 
-          <HoneyPoints value="250" variant="tall" />
+          <HoneyPoints value={honeyPoints} variant="tall" />
         </aside>
       }
     >

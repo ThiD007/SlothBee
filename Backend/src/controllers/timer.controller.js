@@ -1,7 +1,7 @@
 const repo = require("../repositories/timer.repo");
 const pointsRepo = require("../repositories/points.repo");
 
-const HONEY_POINTS_PER_FOCUS_HOUR = 1;
+const FOCUS_SECONDS_PER_HONEY_POINT = 5 * 60;
 
 function buildTimerResponse(session) {
   if (!session) return null;
@@ -86,7 +86,12 @@ async function finish(req, res, next) {
     const timer = buildTimerResponse(finishedSession);
 
     if (session.status === "active") {
-      earnedHoneyPoints = Math.floor(timer.elapsedSeconds / 3600) * HONEY_POINTS_PER_FOCUS_HOUR;
+      const focusSeconds =
+        timer.mode === "countdown" && timer.durationSeconds
+          ? Math.min(timer.elapsedSeconds, timer.durationSeconds)
+          : timer.elapsedSeconds;
+
+      earnedHoneyPoints = Math.floor(focusSeconds / FOCUS_SECONDS_PER_HONEY_POINT);
       if (earnedHoneyPoints > 0) {
         await pointsRepo.addHoneyPoints(req.user.id, earnedHoneyPoints);
       }
