@@ -8,6 +8,8 @@ import {
   updateCurrentUser,
   updateProfilePhoto,
 } from "../services/auth.js"
+import { getTimerSummary } from "../services/timer.js"
+import { defaultFocusSummary, formatFocusDuration } from "../utils/focusTime.js"
 import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
 
 const emptyProfile = {
@@ -28,6 +30,7 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   const [isPhotoSaving, setIsPhotoSaving] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState("")
+  const [focusSummary, setFocusSummary] = useState(defaultFocusSummary)
   const fileInputRef = useRef(null)
 
   const accessToken = useMemo(() => localStorage.getItem("accessToken"), [])
@@ -54,6 +57,9 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
 
         setProfile(nextProfile)
         setFormData(nextProfile)
+
+        const summaryData = await getTimerSummary()
+        setFocusSummary(summaryData.focusSummary || defaultFocusSummary)
       } catch (error) {
         setMessage(error.message)
       } finally {
@@ -191,7 +197,9 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
             <div className="flex items-center justify-center gap-3">
               <Icon className="h-10 w-10 text-[#b2761d]" name="timer" />
               <div className="text-center leading-tight">
-                <strong className="block text-base font-black text-[#2f261d]">2h 14min</strong>
+                <strong className="block text-base font-black text-[#2f261d]">
+                  {formatFocusDuration(focusSummary.todaySeconds, { longMinutes: true })}
+                </strong>
                 <span className="text-[10px] font-bold text-[#8a551f]">Foco de hoje</span>
               </div>
             </div>
