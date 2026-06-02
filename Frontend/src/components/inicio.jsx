@@ -1,20 +1,18 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
+import florzinhaImg from "../public/slothBeeFlorzinha.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
 import { getBalance } from "../services/balance.js"
 import { getHoneyPoints } from "../services/points.js"
 import { getMyTeam } from "../services/teams.js"
 import { finishTimer, getActiveTimer, getTimerSummary, startTimer } from "../services/timer.js"
+import { defaultFocusSummary, formatFocusDuration } from "../utils/focusTime.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
 
-const defaultFocusSummary = {
-  todaySeconds: 0,
-  weekSeconds: 0,
-  dailySeconds: [0, 0, 0, 0, 0, 0, 0],
-}
+const FOCUS_SECONDS_PER_HONEY_POINT = 5 * 60
 
 function formatSeconds(totalSeconds) {
   const safeSeconds = Math.max(0, totalSeconds)
@@ -22,15 +20,6 @@ function formatSeconds(totalSeconds) {
   const seconds = String(safeSeconds % 60).padStart(2, "0")
 
   return `${minutes}:${seconds}`
-}
-
-function formatFocusDuration(totalSeconds) {
-  const safeSeconds = Math.max(0, Number(totalSeconds) || 0)
-  const hours = Math.floor(safeSeconds / 3600)
-  const minutes = Math.floor((safeSeconds % 3600) / 60)
-
-  if (hours <= 0) return `${minutes}m`
-  return `${hours}h ${String(minutes).padStart(2, "0")}m`
 }
 
 function getGreeting() {
@@ -74,6 +63,7 @@ function Inicio({
   const [timerMessage, setTimerMessage] = useState("")
   const [isTimerLoading, setIsTimerLoading] = useState(false)
   const [honeyPoints, setHoneyPoints] = useState(0)
+  const [honeyToast, setHoneyToast] = useState(null)
   const [balance, setBalance] = useState({
     focus: 0,
     rest: 100,
@@ -109,7 +99,7 @@ function Inicio({
       try {
         const balanceData = await getBalance()
         if (!ignore) setBalance(balanceData.balance)
-      } catch (error) {
+      } catch {
         if (!ignore) setBalance((current) => ({ ...current, focus: 0, rest: 100 }))
       }
 
@@ -142,6 +132,12 @@ function Inicio({
     } catch {
       setBalance((current) => ({ ...current, focus: 0, rest: 100 }))
     }
+  }
+
+  function showHoneyToast(points) {
+    if (!points || points <= 0) return
+
+    setHoneyToast({ points, id: Date.now() })
   }
 
   const currentSeconds = useMemo(() => {
@@ -202,12 +198,6 @@ function Inicio({
 
   const chartLine = chartPoints.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ")
   const chartArea = `${chartLine} L${chartPoints[chartPoints.length - 1][0]} 150 L${chartPoints[0][0]} 150 Z`
-  const teamFocus = myTeam?.balance?.focus?.percentage ?? 0
-  const teamRest = myTeam?.balance?.rest?.percentage ?? 0
-  const teamFocusColor = myTeam?.balance?.focus?.color || "#f2b52f"
-  const teamRestColor = myTeam?.balance?.rest?.color || "#91ad35"
-  const balanceBar = getBalanceBarValues(balance.focus, balance.rest)
-  const teamBalanceBar = getBalanceBarValues(teamFocus, teamRest)
 
   useEffect(() => {
     if (!timer || timer.status !== "active" || timer.mode !== "countdown" || currentSeconds > 0 || isTimerLoading) return
@@ -221,7 +211,9 @@ function Inicio({
         await refreshBalance()
         setFocusSummary(data.focusSummary || defaultFocusSummary)
         setTimerMessage("Sessão de foco finalizada")
-        window.alert("Tempo finalizado! Hora de descansar.")
+        if (data.earnedHoneyPoints > 0) {
+          showHoneyToast(data.earnedHoneyPoints)
+        }
       } catch (error) {
         setTimerMessage(error.message)
       } finally {
@@ -263,6 +255,7 @@ function Inicio({
       setTimerMessage("Sessão de foco finalizada")
       if (data.earnedHoneyPoints > 0) {
         setTimerMessage(`Sessão finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
+        showHoneyToast(data.earnedHoneyPoints)
       }
     } catch (error) {
       setTimerMessage(error.message)
@@ -278,6 +271,34 @@ function Inicio({
 
   return (
     <AppFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
+      {honeyToast && (
+        <div
+          key={honeyToast.id}
+          className="honey-toast fixed inset-x-4 top-4 z-50 mx-auto max-w-sm overflow-hidden rounded-lg md:inset-x-auto md:right-8 md:mx-0"
+          role="status"
+        >
+          <button
+            aria-label="Fechar notificacao de pontos de mel"
+            className="honey-toast-close absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full transition-colors"
+            onClick={() => setHoneyToast(null)}
+            type="button"
+          >
+            <Icon className="h-4 w-4" name="close" />
+          </button>
+          <div className="flex items-center gap-3 px-4 py-3 pr-10">
+            <span className="honey-toast-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-inner">
+              <img src={florzinhaImg} alt="" className="h-10 w-10 object-cover" />
+            </span>
+            <div className="min-w-0 leading-tight">
+              <span className="honey-toast-badge inline-flex rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide">
+                +{honeyToast.points} mel
+              </span>
+              <strong className="honey-toast-title mt-1 block text-base font-black">Ponto de mel conquistado!</strong>
+              <span className="honey-toast-text text-[12px] font-bold">5 minutos de foco concluídos</span>
+            </div>
+          </div>
+        </div>
+      )}
       <section className="inicio-layout">
         <section className="inicio-hero relative min-h-[170px] overflow-hidden rounded-lg bg-white shadow-sm sm:min-h-[220px]">
           <div className="inicio-greeting-card absolute left-5 top-7 z-10 h-28 w-32 -rotate-12 rounded-lg border-2 border-[#f1c66f] bg-[#fff7df] p-3 shadow-[0_16px_34px_rgba(138,85,31,0.22)] sm:left-9 sm:top-9 sm:h-32 sm:w-36 sm:p-4">
@@ -305,7 +326,7 @@ function Inicio({
 
         <aside className="inicio-side grid gap-2">
           <HoneyPoints
-            value={honeyPoints}
+            value={liveHoneyPoints}
             compact
             className="flex h-full items-center justify-center [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
           />
@@ -387,7 +408,7 @@ function Inicio({
           </section>
         </aside>
 
-        <section className="inicio-balance rounded-lg border-2 border-[#168ff0] bg-white px-4 py-2 shadow-sm sm:px-7">
+        <section className="inicio-balance rounded-lg bg-white px-4 py-2 shadow-sm sm:px-7">
           <div className="flex items-center justify-center gap-2 text-[13px] font-extrabold text-[#b16f1e]">
             <img src={balancaImg} alt="" className="h-6 w-6 object-cover" />
             Equilíbrio
@@ -435,7 +456,7 @@ function Inicio({
             </div>
 
             <HoneyPoints
-              value={myTeam?.pontos_equipe ?? 0}
+              value={honeyPoints}
               variant="tall"
               className="self-center py-4 sm:h-[82px] [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
             />
