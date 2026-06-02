@@ -153,7 +153,7 @@ function BlogList({ onRead }) {
             <div>
               <h2 className="text-sm font-black text-[#5d8f44]">Pequenas escolhas, grandes mudanças</h2>
               <p className="mt-1 text-[12px] font-bold text-[#6c6b5f]">
-                Cuide de você, uma dica de cada vez.
+                Cuide de você, um dia de cada vez.
               </p>
             </div>
           </section>

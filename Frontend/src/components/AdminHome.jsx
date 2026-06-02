@@ -52,7 +52,7 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
             <img
               src={plantinhaImg}
               alt="Mascote SlothBee"
-              className="relative mx-auto -mb-12 mt-2 h-[230px] w-[260px] object-cover sm:absolute sm:bottom-[-42px] sm:right-[6%] sm:mt-0 sm:h-[330px] sm:w-[360px]"
+              className="relative mx-auto -mb-12 mt-2 h-[230px] w-[260px] sm:absolute sm:bottom-[-92px] sm:right-[6%] sm:mt-0 sm:h-[550px] sm:w-[370px]"
             />
           </section>
 
