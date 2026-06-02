@@ -245,6 +245,7 @@ function Home() {
   if (activePage === "perfil") return <Perfil {...pageProps} />
   if (activePage === "metas") return <Metas {...pageProps} />
   if (activePage === "blog") return <Blog {...pageProps} />
+  if (activePage === "favoritos") return <Blog {...pageProps} favoritesOnly />
 
   return <Inicio {...pageProps} />
 }
