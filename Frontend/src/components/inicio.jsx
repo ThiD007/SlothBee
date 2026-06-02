@@ -101,7 +101,7 @@ function Inicio({
       try {
         const balanceData = await getBalance()
         if (!ignore) setBalance(balanceData.balance)
-      } catch (error) {
+      } catch {
         if (!ignore) setBalance((current) => ({ ...current, focus: 0, rest: 100 }))
       }
     }

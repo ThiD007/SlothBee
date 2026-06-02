@@ -1,70 +1,11 @@
 import { useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
-import balancaImg from "../public/slothBeeBalanca.png"
 import mascoteImg from "../public/slothBeeMascote.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { getBlogPosts } from "../services/blogPosts.js"
 import BlogConteudo from "./BlogConteudo.jsx"
 import { AppFrame, Icon, Logo } from "./shared.jsx"
-
-const blogPosts = [
-  {
-    id: "agua",
-    category: "Saúde",
-    title: "Importância de beber água",
-    summary: "Manter-se hidratado traz inúmeros benefícios para o corpo e para a mente.",
-    image: plantinhaImg,
-    imageBg: "bg-[#dff4f7]",
-    content: [
-      "A água ajuda o corpo a regular a temperatura, transportar nutrientes e manter a energia durante o dia.",
-      "Quando a rotina fica corrida, é comum esquecer pequenas pausas. Um copo de água pode funcionar como um lembrete gentil para respirar e voltar ao foco.",
-      "Criar uma meta simples, como beber água ao iniciar uma sessão de foco, transforma cuidado em hábito.",
-    ],
-    tips: ["Deixe uma garrafa visível na mesa.", "Beba água ao iniciar e encerrar uma tarefa.", "Observe sinais de sede antes do cansaço chegar."],
-  },
-  {
-    id: "movimento",
-    category: "Movimento",
-    title: "Praticar exercícios no dia a dia",
-    summary: "Pequenas atitudes diárias podem melhorar sua disposição, reduzir estresse e aumentar sua produtividade.",
-    image: mascoteImg,
-    imageBg: "bg-[#dff2dc]",
-    content: [
-      "Movimento não precisa ser complicado. Alongar os ombros, caminhar por alguns minutos ou levantar da cadeira já muda a qualidade do dia.",
-      "O corpo parado por muito tempo tende a deixar a mente mais cansada. Pausas ativas ajudam a renovar a atenção.",
-      "O segredo é escolher uma ação pequena o suficiente para caber na rotina sem virar peso.",
-    ],
-    tips: ["Alongue o pescoço entre tarefas.", "Caminhe por cinco minutos depois do almoço.", "Use metas pequenas para manter constância."],
-  },
-  {
-    id: "telas",
-    category: "Saúde mental",
-    title: "Uso excessivo de telas",
-    summary: "Entenda os impactos do tempo de tela em sua saúde mental e descubra dicas para uma relação mais equilibrada.",
-    image: mascoteAlmofadaImg,
-    imageBg: "bg-[#ffe5da]",
-    content: [
-      "As telas fazem parte do trabalho e do descanso, mas o uso sem pausa pode aumentar cansaço visual, ansiedade e dificuldade para dormir.",
-      "Separar momentos sem notificações ajuda o cérebro a desacelerar e recuperar energia.",
-      "Uma rotina equilibrada não elimina tecnologia; ela cria limites para que a tecnologia trabalhe a favor do bem-estar.",
-    ],
-    tips: ["Desative notificações durante o foco.", "Evite tela intensa antes de dormir.", "Troque uma pausa de rolagem por uma pausa de respiração."],
-  },
-  {
-    id: "alimentacao",
-    category: "Nutrição",
-    title: "Alimentação saudável para foco",
-    summary: "Alimentos certos ajudam a melhorar a concentração, a memória e o bem-estar ao longo do dia.",
-    image: balancaImg,
-    imageBg: "bg-[#e8f5d6]",
-    content: [
-      "Comer bem durante o dia ajuda a evitar quedas bruscas de energia e melhora a clareza mental.",
-      "Pratos simples com fibras, proteínas e alimentos frescos sustentam melhor o foco do que escolhas muito pesadas ou cheias de açúcar.",
-      "Planejar pequenos lanches também reduz decisões impulsivas quando o cansaço aparece.",
-    ],
-    tips: ["Inclua frutas ou castanhas nos intervalos.", "Evite longos períodos sem comer.", "Prefira refeições leves antes de tarefas importantes."],
-  },
-]
 
 function BlogCard({ post, onRead }) {
   return (
@@ -94,6 +35,7 @@ function BlogCard({ post, onRead }) {
 }
 
 function BlogList({ onRead }) {
+  const [blogPosts] = useState(getBlogPosts)
   const [isProfessionalOpen, setIsProfessionalOpen] = useState(false)
   const professional = {
     name: "Dra. Mariana Alves",
@@ -115,7 +57,7 @@ function BlogList({ onRead }) {
                 <span className="text-[#f2b52f]">Bee</span>
               </h1>
               <p className="mt-1 text-sm font-bold text-[#6c6b5f]">
-                Dicas e conteúdos para uma vida mais leve, saudável e equilibrada.
+                Dicas e conteudos para uma vida mais leve, saudavel e equilibrada.
               </p>
             </div>
             <img src={abelhaImg} alt="" className="ml-auto h-16 w-16 object-contain" />
@@ -135,7 +77,7 @@ function BlogList({ onRead }) {
             </div>
             <h2 className="mt-4 text-2xl font-black text-[#263d2a]">Precisa de ajuda?</h2>
             <p className="mx-auto mt-3 max-w-[220px] text-sm font-bold leading-snug text-[#6c6b5f]">
-              Conversar com um profissional pode fazer toda a diferença. Você não precisa passar por isso sozinho.
+              Conversar com um profissional pode fazer toda a diferenca. Voce nao precisa passar por isso sozinho.
             </p>
             <button
               type="button"
@@ -151,10 +93,8 @@ function BlogList({ onRead }) {
           <section className="grid grid-cols-[56px_1fr] items-center gap-3 rounded-sm bg-white p-4 shadow-sm">
             <img src={mascoteImg} alt="" className="h-14 w-14 object-contain" />
             <div>
-              <h2 className="text-sm font-black text-[#5d8f44]">Pequenas escolhas, grandes mudanças</h2>
-              <p className="mt-1 text-[12px] font-bold text-[#6c6b5f]">
-                Cuide de você, uma dica de cada vez.
-              </p>
+              <h2 className="text-sm font-black text-[#5d8f44]">Pequenas escolhas, grandes mudancas</h2>
+              <p className="mt-1 text-[12px] font-bold text-[#6c6b5f]">Cuide de voce, uma dica de cada vez.</p>
             </div>
           </section>
         </aside>

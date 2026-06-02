@@ -1,42 +1,12 @@
+import { useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
-import balancaImg from "../public/slothBeeBalanca.png"
-import mascoteImg from "../public/slothBeeMascote.png"
-import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { addBlogPost, deleteBlogPost, getBlogPosts } from "../services/blogPosts.js"
 import { AdminFrame, Icon, Logo } from "./shared.jsx"
 
-const adminPosts = [
-  {
-    title: "Importancia de beber agua",
-    category: "Saude",
-    summary: "Conteudo para incentivar hidratacao durante ciclos de foco.",
-    image: plantinhaImg,
-    imageBg: "bg-[#dff4f7]",
-  },
-  {
-    title: "Praticar exercicios no dia a dia",
-    category: "Movimento",
-    summary: "Dicas simples para reduzir sedentarismo na rotina de trabalho.",
-    image: mascoteImg,
-    imageBg: "bg-[#dff2dc]",
-  },
-  {
-    title: "Uso excessivo de telas",
-    category: "Saude mental",
-    summary: "Orientacoes para equilibrar descanso e tempo de tela.",
-    image: mascoteAlmofadaImg,
-    imageBg: "bg-[#ffe5da]",
-  },
-  {
-    title: "Alimentacao saudavel para foco",
-    category: "Nutricao",
-    summary: "Sugestoes para manter energia e concentracao ao longo do dia.",
-    image: balancaImg,
-    imageBg: "bg-[#e8f5d6]",
-  },
-]
+function AdminPostCard({ post, onDelete }) {
+  const canDelete = post.id.includes("-")
 
-function AdminPostCard({ post }) {
   return (
     <article className="grid gap-3 rounded-lg bg-white p-3 shadow-sm sm:grid-cols-[96px_1fr_auto] sm:items-center">
       <div className={`flex h-24 items-center justify-center rounded-sm ${post.imageBg}`}>
@@ -55,7 +25,13 @@ function AdminPostCard({ post }) {
         <button type="button" className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#fbe7c6] text-[#8a551f]">
           <Icon className="h-4 w-4" name="edit" />
         </button>
-        <button type="button" className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#8d5a27] text-white">
+        <button
+          type="button"
+          onClick={() => canDelete && onDelete(post.id)}
+          disabled={!canDelete}
+          className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#8d5a27] text-white disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={`Deletar ${post.title}`}
+        >
           <Icon className="h-4 w-4" name="trash" />
         </button>
       </div>
@@ -64,6 +40,46 @@ function AdminPostCard({ post }) {
 }
 
 function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
+  const [posts, setPosts] = useState(getBlogPosts)
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    summary: "",
+  })
+  const [message, setMessage] = useState("")
+
+  function handleFieldChange(event) {
+    const { name, value } = event.target
+    setFormData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }))
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    const title = formData.title.trim()
+    const category = formData.category.trim()
+    const summary = formData.summary.trim()
+
+    if (!title || !category || !summary) {
+      setMessage("Preencha titulo, categoria e resumo.")
+      return
+    }
+
+    addBlogPost({ title, category, summary })
+    setPosts(getBlogPosts())
+    setFormData({ title: "", category: "", summary: "" })
+    setMessage("Blog adicionado com sucesso.")
+  }
+
+  function handleDeletePost(id) {
+    deleteBlogPost(id)
+    setPosts(getBlogPosts())
+    setMessage("Blog removido.")
+  }
+
   return (
     <AdminFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid gap-3 lg:min-h-[calc(100vh-1rem)] xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -85,8 +101,8 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
           </header>
 
           <section className="grid gap-3">
-            {adminPosts.map((post) => (
-              <AdminPostCard key={post.title} post={post} />
+            {posts.map((post) => (
+              <AdminPostCard key={post.id} post={post} onDelete={handleDeletePost} />
             ))}
           </section>
         </div>
@@ -98,33 +114,40 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
               Novo blog
             </div>
 
-            <form className="mt-4 grid gap-3">
+            <form className="mt-4 grid gap-3" onSubmit={handleSubmit}>
               <label className="text-[12px] font-black text-[#8c9b3b]">
                 Titulo
                 <input
-                  readOnly
-                  value="Pausas que ajudam o foco"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleFieldChange}
+                  placeholder="Pausas que ajudam o foco"
                   className="mt-1 h-9 w-full rounded-sm bg-[#f7f3e8] px-3 text-[12px] font-bold text-[#8a551f] outline-none"
                 />
               </label>
               <label className="text-[12px] font-black text-[#8c9b3b]">
                 Categoria
                 <input
-                  readOnly
-                  value="Saude mental"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleFieldChange}
+                  placeholder="Saude mental"
                   className="mt-1 h-9 w-full rounded-sm bg-[#f7f3e8] px-3 text-[12px] font-bold text-[#8a551f] outline-none"
                 />
               </label>
               <label className="text-[12px] font-black text-[#8c9b3b]">
                 Resumo
                 <textarea
-                  readOnly
-                  value="Texto visual para demonstrar onde o adm escrevera a chamada do blog."
+                  name="summary"
+                  value={formData.summary}
+                  onChange={handleFieldChange}
+                  placeholder="Escreva a chamada curta do blog."
                   className="mt-1 min-h-24 w-full resize-none rounded-sm bg-[#f7f3e8] px-3 py-2 text-[12px] font-bold text-[#8a551f] outline-none"
                 />
               </label>
+              {message && <p className="text-[12px] font-black text-[#5d8f44]">{message}</p>}
               <button
-                type="button"
+                type="submit"
                 className="mt-2 inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-[#b3c843] px-4 text-[12px] font-black text-[#795719]"
               >
                 Adicionar blog
