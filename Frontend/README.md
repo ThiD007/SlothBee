@@ -4,7 +4,7 @@ O SlothBee é uma plataforma de produtividade e bem-estar digital que ajuda usu�
 
 ## 📖 Sobre o Projeto
 
-Muitas pessoas enfrentam dificuldades para manter a produtividade sem comprometer seu bem-estar. O SlothBee foi criado para auxiliar estudantes, profissionais e equipes a desenvolverem hábitos saudáveis e manterem o foco no dia a dia.
+Muitas pessoas enfrentam dificuldades para manter a produtividade sem comprometer seu bem-estar. O SlothBee foi criado para auxiliar profissionais e equipes a desenvolverem hábitos saudáveis e manterem o foco no dia a dia.
 
 A plataforma oferece ferramentas para organização da rotina, acompanhamento de metas, sessões de foco e conteúdos educativos sobre saúde e autocuidado.
 
