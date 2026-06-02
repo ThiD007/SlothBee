@@ -197,11 +197,8 @@ function Inicio({
         const data = await finishTimer(timer.id)
         setTimer(data.timer)
         setHoneyPoints(data.honeyPoints)
-<<<<<<< HEAD
         await refreshBalance()
-=======
         setFocusSummary(data.focusSummary || defaultFocusSummary)
->>>>>>> d7370d6 (alterei o cronometro, agora devo melhorar, pois não salvou o total de foco da semana e de hoje)
         setTimerMessage("Sessão de foco finalizada")
         window.alert("Tempo finalizado! Hora de descansar.")
       } catch (error) {
@@ -240,11 +237,8 @@ function Inicio({
       const data = await finishTimer(timer.id)
       setTimer(data.timer)
       setHoneyPoints(data.honeyPoints)
-<<<<<<< HEAD
       await refreshBalance()
-=======
       setFocusSummary(data.focusSummary || defaultFocusSummary)
->>>>>>> d7370d6 (alterei o cronometro, agora devo melhorar, pois não salvou o total de foco da semana e de hoje)
       setTimerMessage("Sessão de foco finalizada")
       if (data.earnedHoneyPoints > 0) {
         setTimerMessage(`Sessão finalizada. Voce ganhou ${data.earnedHoneyPoints} pontos de mel.`)
