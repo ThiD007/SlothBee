@@ -15,6 +15,19 @@ function getInactiveHoursSince(date) {
 
 function buildBalance(stats) {
   const focusMinutes = Math.floor(stats.focusSeconds / 60);
+  const hasActivity = focusMinutes > 0 || stats.completedGoals > 0 || stats.completedSessions > 0;
+
+  if (!hasActivity) {
+    return {
+      focus: 0,
+      rest: 0,
+      focusMinutes,
+      completedGoals: stats.completedGoals,
+      completedSessions: stats.completedSessions,
+      inactiveHours: 0,
+    };
+  }
+
   const timerScore = Math.min(60, (focusMinutes / 90) * 60);
   const missionScore = Math.min(35, stats.completedGoals * 7);
   const sessionScore = Math.min(5, stats.completedSessions);

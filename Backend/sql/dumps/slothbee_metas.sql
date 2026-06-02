@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
 -- Host: localhost    Database: slothbee
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	8.4.3
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -34,7 +34,7 @@ CREATE TABLE `metas` (
   KEY `idx_metas_tipo_usuario` (`tipo`,`usuario_id`,`active`),
   KEY `fk_metas_usuario` (`usuario_id`),
   CONSTRAINT `fk_metas_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `metas` (
 
 LOCK TABLES `metas` WRITE;
 /*!40000 ALTER TABLE `metas` DISABLE KEYS */;
-INSERT INTO `metas` VALUES (1,'Fazer pausas',15,'selfcare',5,1,'2026-06-01 15:46:02'),(2,'Checar postura no foco',50,'selfcare',5,1,'2026-06-01 15:46:02'),(3,'Cuidar do humor',15,'selfcare',5,1,'2026-06-01 15:46:02'),(4,'Modo sem tela',30,'selfcare',5,1,'2026-06-01 15:46:02'),(5,'Alongar o corpo',20,'selfcare',5,0,'2026-06-01 15:46:02'),(6,'Beber 2l de água',15,'selfcare',5,1,'2026-06-01 15:46:42'),(7,'deydheyde',15,'selfcare',5,0,'2026-06-01 15:46:49'),(8,'deeeeeeeee',15,'selfcare',5,0,'2026-06-01 15:48:44'),(9,'ddddddddddd',15,'selfcare',5,0,'2026-06-01 15:48:49'),(10,'Checar postura no foco',15,'selfcare',6,1,'2026-06-01 16:16:43'),(11,'Fazer pausas conscientes',15,'selfcare',6,1,'2026-06-01 16:16:43'),(12,'Modo sem tela',15,'selfcare',6,1,'2026-06-01 16:16:43'),(13,'Alongar o corpo',15,'selfcare',6,1,'2026-06-01 16:16:43'),(14,'Cuidar do humor',15,'selfcare',6,1,'2026-06-01 16:16:43'),(15,'Desenvolver projeto x',15,'today',NULL,1,'2026-06-01 16:25:11');
+INSERT INTO `metas` VALUES (1,'Fazer pausas',15,'selfcare',5,1,'2026-06-01 15:46:02'),(2,'Checar postura no foco',50,'selfcare',5,1,'2026-06-01 15:46:02'),(3,'Cuidar do humor',15,'selfcare',5,1,'2026-06-01 15:46:02'),(4,'Modo sem tela',30,'selfcare',5,1,'2026-06-01 15:46:02'),(5,'Alongar o corpo',20,'selfcare',5,0,'2026-06-01 15:46:02'),(6,'Beber 2l de água',15,'selfcare',5,1,'2026-06-01 15:46:42'),(7,'deydheyde',15,'selfcare',5,0,'2026-06-01 15:46:49'),(8,'deeeeeeeee',15,'selfcare',5,0,'2026-06-01 15:48:44'),(9,'ddddddddddd',15,'selfcare',5,0,'2026-06-01 15:48:49'),(10,'Checar postura no foco',15,'selfcare',6,1,'2026-06-01 16:16:43'),(11,'Fazer pausas conscientes',15,'selfcare',6,1,'2026-06-01 16:16:43'),(12,'Modo sem tela',15,'selfcare',6,1,'2026-06-01 16:16:43'),(13,'Alongar o corpo',15,'selfcare',6,1,'2026-06-01 16:16:43'),(14,'Cuidar do humor',15,'selfcare',6,1,'2026-06-01 16:16:43'),(15,'Desenvolver projeto x',15,'today',NULL,1,'2026-06-01 16:25:11'),(16,'Checar postura no foco',15,'selfcare',7,1,'2026-06-02 09:47:00'),(17,'Fazer pausas conscientes',15,'selfcare',7,1,'2026-06-02 09:47:00'),(18,'Alongar o corpo',15,'selfcare',7,1,'2026-06-02 09:47:00'),(19,'Modo sem tela',15,'selfcare',7,1,'2026-06-02 09:47:00'),(20,'Cuidar do humor',15,'selfcare',7,1,'2026-06-02 09:47:00'),(21,'Desing dos botões',15,'today',NULL,1,'2026-06-02 09:54:58'),(22,'Crud dos produtos',15,'today',NULL,1,'2026-06-02 09:55:21');
 /*!40000 ALTER TABLE `metas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-01 16:33:39
+-- Dump completed on 2026-06-02 10:11:25

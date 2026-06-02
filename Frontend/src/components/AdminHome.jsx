@@ -1,21 +1,12 @@
+import { useEffect, useMemo, useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { getAdminGoalsSummary } from "../services/goals.js"
+import { getTeams } from "../services/teams.js"
 import { AdminFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
-
-const overviewCards = [
-  { label: "Equipes ativas", value: "04", icon: "team" },
-  { label: "Metas enviadas", value: "18", icon: "goals" },
-  { label: "Posts no blog", value: "06", icon: "blog" },
-]
-
-const teamRows = [
-  { name: "Equipe Colmeia", focus: "72%", rest: "28%" },
-  { name: "Equipe Jardim", focus: "64%", rest: "36%" },
-  { name: "Equipe Mel", focus: "58%", rest: "42%" },
-]
 
 function OverviewCard({ card }) {
   return (
@@ -38,6 +29,61 @@ function OverviewCard({ card }) {
 }
 
 function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
+  const [teams, setTeams] = useState([])
+  const [goalsSummary, setGoalsSummary] = useState({ totalSentGoals: 0, activeSentGoals: 0 })
+  const [message, setMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let ignore = false
+
+    async function loadAdminHome() {
+      try {
+        setIsLoading(true)
+        setMessage("")
+        const [teamsData, goalsData] = await Promise.all([getTeams(), getAdminGoalsSummary()])
+        if (!ignore) {
+          setTeams(Array.isArray(teamsData.teams) ? teamsData.teams : [])
+          setGoalsSummary(goalsData.summary || { totalSentGoals: 0, activeSentGoals: 0 })
+        }
+      } catch (error) {
+        if (!ignore) setMessage(error.message)
+      } finally {
+        if (!ignore) setIsLoading(false)
+      }
+    }
+
+    loadAdminHome()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  const totalTeamPoints = teams.reduce((sum, team) => sum + Number(team.pontos_equipe || 0), 0)
+  const engagement = teams.length
+    ? Math.round(teams.reduce((sum, team) => sum + Number(team.balance?.focus?.percentage || 0), 0) / teams.length)
+    : 0
+
+  const teamRows = useMemo(
+    () =>
+      [...teams]
+        .sort((left, right) => Number(right.pontos_equipe || 0) - Number(left.pontos_equipe || 0))
+        .slice(0, 3)
+        .map((team) => ({
+          name: team.nome_equipe,
+          focus: `${team.balance?.focus?.percentage ?? 0}%`,
+          rest: `${team.balance?.rest?.percentage ?? 0}%`,
+        })),
+    [teams]
+  )
+
+  const overviewCards = [
+    { label: "Equipes ativas", value: String(teams.length).padStart(2, "0"), icon: "team" },
+    { label: "Metas enviadas", value: String(goalsSummary.activeSentGoals || 0).padStart(2, "0"), icon: "goals" },
+    { label: "Posts no blog", value: "06", icon: "blog" },
+  ]
+
   return (
     <AdminFrame activePage={activePage} onNavigate={onNavigate} theme={theme} onToggleTheme={onToggleTheme}>
       <section className="grid gap-3 lg:min-h-[calc(100vh-1rem)] lg:grid-rows-[minmax(230px,1fr)_auto_1fr]">
@@ -46,8 +92,10 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
             <div className="relative z-10 max-w-[270px] sm:absolute sm:left-8 sm:top-8">
               <h1 className="text-3xl font-black text-[#9a5a1e]">Painel do administrador</h1>
               <p className="mt-3 text-sm font-bold leading-snug text-[#658a30]">
-                Acompanhe equipes, metas e conteudos antes da integracao com o backend.
+                Acompanhe equipes, metas e conteudos conectados ao backend.
               </p>
+              {message && <p className="mt-3 text-[12px] font-bold text-[#8a551f]">{message}</p>}
+              {isLoading && <p className="mt-3 text-[12px] font-bold text-[#8a551f]">Carregando resumo...</p>}
             </div>
             <img
               src={plantinhaImg}
@@ -57,10 +105,10 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
           </section>
 
           <aside className="grid gap-3">
-            <HoneyPoints value="2.450" label="Pontos de Mel" compact />
+            <HoneyPoints value={totalTeamPoints} label="Pontos de Mel" compact />
             <section className="rounded-lg bg-[#fbe7c6] p-4 text-center shadow-sm">
               <img src={abelhaImg} alt="" className="mx-auto h-12 w-12 object-cover" />
-              <strong className="mt-2 block text-xl font-black text-[#2f261d]">82%</strong>
+              <strong className="mt-2 block text-xl font-black text-[#2f261d]">{engagement}%</strong>
               <span className="text-[12px] font-bold text-[#8a551f]">Engajamento geral</span>
             </section>
           </aside>
@@ -83,11 +131,19 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
                 <article key={team.name}>
                   <div className="mb-2 flex items-center justify-between text-[12px] font-black text-[#8a551f]">
                     <span>{team.name}</span>
-                    <span className="text-[#85a834]">{team.focus} foco</span>
+                    <span className="flex gap-2">
+                      <span className="text-[#e1a11f]">{team.focus} foco</span>
+                      <span className="text-[#85a834]">{team.rest} descanso</span>
+                    </span>
                   </div>
                   <ProgressBar left={team.focus} right={team.rest} />
                 </article>
               ))}
+              {!isLoading && teamRows.length === 0 && (
+                <p className="rounded-md bg-[#f7f3e8] p-3 text-[12px] font-bold text-[#765126]">
+                  Nenhuma equipe cadastrada ainda.
+                </p>
+              )}
             </div>
           </section>
 
@@ -97,9 +153,14 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
               Metas em destaque
             </div>
             <div className="mt-4 space-y-3 text-[12px] font-bold text-[#765126]">
-              <p className="rounded-md bg-[#f7f3e8] p-3">Beber agua ao iniciar uma sessão de foco.</p>
-              <p className="rounded-md bg-[#f7f3e8] p-3">Fazer uma pausa consciente a cada ciclo.</p>
-              <p className="rounded-md bg-[#f7f3e8] p-3">Registrar uma pequena vitoria do dia.</p>
+              <p className="rounded-md bg-[#f7f3e8] p-3">
+                {goalsSummary.activeSentGoals > 0
+                  ? `${goalsSummary.activeSentGoals} metas de hoje ativas foram enviadas pelo administrador.`
+                  : "Nenhuma meta enviada pelo administrador ainda."}
+              </p>
+              <p className="rounded-md bg-[#f7f3e8] p-3">
+                Total historico de metas enviadas: {goalsSummary.totalSentGoals || 0}.
+              </p>
             </div>
             <img src={mascoteAlmofadaImg} alt="" className="mx-auto mt-4 h-24 w-24 object-cover" />
           </section>

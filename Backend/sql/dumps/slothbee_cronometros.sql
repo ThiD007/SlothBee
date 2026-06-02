@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
 -- Host: localhost    Database: slothbee
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	8.4.3
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -31,7 +31,7 @@ CREATE TABLE `cronometros` (
   `finalizado_em` datetime DEFAULT NULL,
   `status` enum('ativo','finalizado') NOT NULL DEFAULT 'ativo',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `cronometros` (
 
 LOCK TABLES `cronometros` WRITE;
 /*!40000 ALTER TABLE `cronometros` DISABLE KEYS */;
-INSERT INTO `cronometros` VALUES (1,5,'cronometro',NULL,'2026-06-01 15:31:36','2026-06-01 15:31:43','finalizado'),(2,5,'contagem_regressiva',1500,'2026-06-01 15:31:50','2026-06-01 15:31:54','finalizado'),(3,5,'contagem_regressiva',1500,'2026-06-01 15:35:39','2026-06-01 15:35:41','finalizado'),(4,5,'cronometro',NULL,'2026-06-01 15:35:48','2026-06-01 15:35:51','finalizado'),(5,5,'cronometro',NULL,'2026-06-01 15:35:57','2026-06-01 15:35:59','finalizado'),(6,5,'contagem_regressiva',1500,'2026-06-01 15:36:03','2026-06-01 15:36:07','finalizado');
+INSERT INTO `cronometros` VALUES (1,5,'cronometro',NULL,'2026-06-01 15:31:36','2026-06-01 15:31:43','finalizado'),(2,5,'contagem_regressiva',1500,'2026-06-01 15:31:50','2026-06-01 15:31:54','finalizado'),(3,5,'contagem_regressiva',1500,'2026-06-01 15:35:39','2026-06-01 15:35:41','finalizado'),(4,5,'cronometro',NULL,'2026-06-01 15:35:48','2026-06-01 15:35:51','finalizado'),(5,5,'cronometro',NULL,'2026-06-01 15:35:57','2026-06-01 15:35:59','finalizado'),(6,5,'contagem_regressiva',1500,'2026-06-01 15:36:03','2026-06-01 15:36:07','finalizado'),(7,7,'cronometro',NULL,'2026-06-02 09:49:50','2026-06-02 09:50:51','finalizado');
 /*!40000 ALTER TABLE `cronometros` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-01 16:33:39
+-- Dump completed on 2026-06-02 10:11:25

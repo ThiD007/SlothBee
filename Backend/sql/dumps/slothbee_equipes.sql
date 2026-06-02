@@ -16,30 +16,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `metas_concluidas`
+-- Table structure for table `equipes`
 --
 
-DROP TABLE IF EXISTS `metas_concluidas`;
+DROP TABLE IF EXISTS `equipes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `metas_concluidas` (
+CREATE TABLE `equipes` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `meta_id` int NOT NULL,
-  `usuario_id` int NOT NULL,
-  `concluida_em` date NOT NULL,
-  `registrado_em` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `nome_equipe` varchar(100) NOT NULL,
+  `pontos_equipe` int DEFAULT '0',
+  `metas_equipe` int DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `metas_concluidas`
+-- Dumping data for table `equipes`
 --
 
-LOCK TABLES `metas_concluidas` WRITE;
-/*!40000 ALTER TABLE `metas_concluidas` DISABLE KEYS */;
-INSERT INTO `metas_concluidas` VALUES (3,1,5,'2026-06-01','2026-06-01 15:51:39'),(4,2,5,'2026-06-01','2026-06-01 15:51:40'),(5,3,5,'2026-06-01','2026-06-01 15:51:41'),(6,15,5,'2026-06-01','2026-06-01 16:26:03'),(16,1,5,'2026-06-02','2026-06-02 09:36:34'),(17,2,5,'2026-06-02','2026-06-02 09:36:35'),(18,3,5,'2026-06-02','2026-06-02 09:36:36'),(19,4,5,'2026-06-02','2026-06-02 09:36:36'),(20,6,5,'2026-06-02','2026-06-02 09:36:45'),(21,15,5,'2026-06-02','2026-06-02 09:41:42'),(22,15,7,'2026-06-02','2026-06-02 09:47:03'),(23,16,7,'2026-06-02','2026-06-02 09:47:04'),(24,17,7,'2026-06-02','2026-06-02 09:47:06'),(25,18,7,'2026-06-02','2026-06-02 09:47:07'),(26,19,7,'2026-06-02','2026-06-02 09:47:08');
-/*!40000 ALTER TABLE `metas_concluidas` ENABLE KEYS */;
+LOCK TABLES `equipes` WRITE;
+/*!40000 ALTER TABLE `equipes` DISABLE KEYS */;
+INSERT INTO `equipes` VALUES (2,'Equipe Abelha',0,0);
+/*!40000 ALTER TABLE `equipes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

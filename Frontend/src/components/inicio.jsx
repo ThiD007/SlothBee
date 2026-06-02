@@ -6,6 +6,7 @@ import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
 import { getBalance } from "../services/balance.js"
 import { getHoneyPoints } from "../services/points.js"
+import { getMyTeam } from "../services/teams.js"
 import { finishTimer, getActiveTimer, getTimerSummary, startTimer } from "../services/timer.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
 
@@ -53,6 +54,12 @@ function getStartOfWeek(date) {
   return start
 }
 
+function getBalanceBarValues(focus, rest) {
+  return Number(focus) === 0 && Number(rest) === 0
+    ? { focus: "50%", rest: "50%" }
+    : { focus: `${focus}%`, rest: `${rest}%` }
+}
+
 function Inicio({
   activePage,
   onNavigate,
@@ -75,6 +82,7 @@ function Inicio({
     completedSessions: 0,
   })
   const [focusSummary, setFocusSummary] = useState(defaultFocusSummary)
+  const [myTeam, setMyTeam] = useState(null)
   const greeting = getGreeting()
   const firstName = getFirstName(currentUser)
 
@@ -103,6 +111,13 @@ function Inicio({
         if (!ignore) setBalance(balanceData.balance)
       } catch (error) {
         if (!ignore) setBalance((current) => ({ ...current, focus: 0, rest: 100 }))
+      }
+
+      try {
+        const teamData = await getMyTeam()
+        if (!ignore) setMyTeam(teamData.team)
+      } catch {
+        if (!ignore) setMyTeam(null)
       }
     }
 
@@ -187,6 +202,12 @@ function Inicio({
 
   const chartLine = chartPoints.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ")
   const chartArea = `${chartLine} L${chartPoints[chartPoints.length - 1][0]} 150 L${chartPoints[0][0]} 150 Z`
+  const teamFocus = myTeam?.balance?.focus?.percentage ?? 0
+  const teamRest = myTeam?.balance?.rest?.percentage ?? 0
+  const teamFocusColor = myTeam?.balance?.focus?.color || "#f2b52f"
+  const teamRestColor = myTeam?.balance?.rest?.color || "#91ad35"
+  const balanceBar = getBalanceBarValues(balance.focus, balance.rest)
+  const teamBalanceBar = getBalanceBarValues(teamFocus, teamRest)
 
   useEffect(() => {
     if (!timer || timer.status !== "active" || timer.mode !== "countdown" || currentSeconds > 0 || isTimerLoading) return
@@ -388,30 +409,35 @@ function Inicio({
             </div>
           </div>
           <div className="mt-1.5">
-            <ProgressBar left={`${balance.focus}%`} right={`${balance.rest}%`} />
+            <ProgressBar left={balanceBar.focus} right={balanceBar.rest} />
           </div>
         </section>
 
-        <section className="inicio-team rounded-lg bg-white px-4 py-3 shadow-sm">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px] sm:items-center lg:grid-cols-[minmax(0,1fr)_190px]">
-            <div>
+        <section className="inicio-team rounded-lg bg-white px-5 py-5 shadow-sm">
+          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_190px] sm:items-center lg:grid-cols-[minmax(0,1fr)_210px]">
+            <div className="min-w-0">
               <div className="flex items-center gap-2 text-[13px] font-extrabold text-[#8a551f]">
                 <img src={colmeiaSimboloImg} alt="" className="h-6 w-6 object-cover" />
-                Equipe progresso
+                {myTeam?.nome_equipe || "Equipe progresso"}
               </div>
+              <p className="mt-1 text-[11px] font-bold text-[#765126]">
+                {myTeam
+                  ? `${myTeam.total_integrantes} usuarios na equipe - ${myTeam.metas_equipe} metas cumpridas`
+                  : "Voce ainda nao esta em uma equipe."}
+              </p>
               <div className="mt-3 flex justify-around text-[13px] font-bold">
-                <span className="text-[#e1a11f]">50%</span>
-                <span className="text-[#85a834]">50%</span>
+                <span style={{ color: teamFocusColor }}>{teamFocus}% foco</span>
+                <span style={{ color: teamRestColor }}>{teamRest}% descanso</span>
               </div>
-              <div className="mt-2">
-                <ProgressBar left="50%" right="50%" />
+              <div className="mt-2 w-full">
+                <ProgressBar left={teamBalanceBar.focus} right={teamBalanceBar.rest} />
               </div>
             </div>
 
             <HoneyPoints
-              value={honeyPoints}
+              value={myTeam?.pontos_equipe ?? 0}
               variant="tall"
-              className="self-center py-3 sm:h-[70px] [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
+              className="self-center py-4 sm:h-[82px] [&_img]:h-8 [&_img]:w-8 [&_span]:text-[10px] [&_strong]:text-[14px]"
             />
           </div>
         </section>

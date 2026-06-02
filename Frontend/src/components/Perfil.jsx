@@ -8,6 +8,8 @@ import {
   updateCurrentUser,
   updateProfilePhoto,
 } from "../services/auth.js"
+import { getCompletedGoalsCount } from "../services/goals.js"
+import { getHoneyPoints } from "../services/points.js"
 import { AppFrame, HoneyPoints, Icon } from "./shared.jsx"
 
 const emptyProfile = {
@@ -26,6 +28,8 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isPhotoSaving, setIsPhotoSaving] = useState(false)
+  const [honeyPoints, setHoneyPoints] = useState(0)
+  const [completedGoals, setCompletedGoals] = useState(0)
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState("")
   const fileInputRef = useRef(null)
@@ -54,6 +58,17 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
 
         setProfile(nextProfile)
         setFormData(nextProfile)
+
+        const [pointsResult, goalsResult] = await Promise.allSettled([getHoneyPoints(), getCompletedGoalsCount()])
+        if (pointsResult.status === "fulfilled") {
+          setHoneyPoints(pointsResult.value.honeyPoints || 0)
+        }
+        if (goalsResult.status === "fulfilled") {
+          setCompletedGoals(goalsResult.value.completedGoals || 0)
+        }
+        if (pointsResult.status === "rejected" || goalsResult.status === "rejected") {
+          setMessage("Perfil carregado, mas nao foi possivel carregar todos os indicadores.")
+        }
       } catch (error) {
         setMessage(error.message)
       } finally {
@@ -203,13 +218,13 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
                 ◉
               </span>
               <div className="text-center leading-tight">
-                <strong className="block text-base font-black text-[#2f261d]">17</strong>
-                <span className="text-[10px] font-bold text-[#8a551f]">Metas cumpridas</span>
+                <strong className="block text-base font-black text-[#2f261d]">{completedGoals}</strong>
+                <span className="text-[10px] font-bold text-[#8a551f]">Metas cumpridas do dia</span>
               </div>
             </div>
           </section>
 
-          <HoneyPoints value="250" variant="tall" />
+          <HoneyPoints value={honeyPoints} variant="tall" />
         </aside>
       }
     >

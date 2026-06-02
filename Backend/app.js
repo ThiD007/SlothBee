@@ -11,6 +11,7 @@ const timerRoutes = require("./src/routes/timer.route");
 const pointsRoutes = require("./src/routes/points.route");
 const goalRoutes = require("./src/routes/goal.route");
 const balanceRoutes = require("./src/routes/balance.route");
+const teamRoutes = require("./src/routes/team.route");
 
 const { errorHandler} = require("./src/middlewares/error.middleware");
 
@@ -27,6 +28,7 @@ app.use("/users", userRoutes);
 app.use("/timers", timerRoutes);
 app.use("/points", pointsRoutes);
 app.use("/balance", balanceRoutes);
+app.use("/teams", teamRoutes);
 app.use(goalRoutes);
 
 app.use(errorHandler);

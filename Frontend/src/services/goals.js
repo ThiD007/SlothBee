@@ -25,6 +25,10 @@ export function getGoals() {
   return request("/goals");
 }
 
+export function getCompletedGoalsCount() {
+  return request("/goals/completed-count");
+}
+
 export function toggleGoal(id) {
   return request(`/goals/${id}/toggle`, { method: "PATCH" });
 }
@@ -49,6 +53,10 @@ export function deleteSelfcareGoal(id) {
 
 export function getAdminTodayGoals() {
   return request("/admin/goals/today");
+}
+
+export function getAdminGoalsSummary() {
+  return request("/admin/goals/summary");
 }
 
 export function createAdminTodayGoal(goal) {
