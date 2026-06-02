@@ -49,12 +49,35 @@ async function listGoalsForUser(userId) {
   return rows;
 }
 
+async function countCompletedGoals(userId) {
+  const [rows] = await db.query(
+    "SELECT COUNT(*) AS total FROM metas_concluidas WHERE usuario_id = ? AND concluida_em = CURDATE()",
+    [userId]
+  );
+  return rows[0]?.total || 0;
+}
+
 async function listTodayAdminGoals() {
   const [rows] = await db.query(
     "SELECT id, titulo, pontos, tipo FROM metas WHERE tipo = 'today' AND active = 1 ORDER BY id"
   );
 
   return rows;
+}
+
+async function getAdminGoalsSummary() {
+  const [rows] = await db.query(
+    `SELECT
+       COUNT(*) AS total_sent_goals,
+       SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) AS active_sent_goals
+     FROM metas
+     WHERE tipo = 'today' AND usuario_id IS NULL`
+  );
+
+  return {
+    totalSentGoals: Number(rows[0]?.total_sent_goals) || 0,
+    activeSentGoals: Number(rows[0]?.active_sent_goals) || 0,
+  };
 }
 
 async function createTodayGoal(titulo, pontos) {
@@ -132,7 +155,9 @@ async function uncompleteGoal(goalId, userId) {
 
 module.exports = {
   listGoalsForUser,
+  countCompletedGoals,
   listTodayAdminGoals,
+  getAdminGoalsSummary,
   createTodayGoal,
   updateTodayGoal,
   deleteTodayGoal,

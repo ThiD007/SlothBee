@@ -232,8 +232,20 @@ function Home() {
     onToggleTheme: handleToggleTheme,
   }
 
-  if (adminPages.has(activePage) && isSessionLoading) return null
-  if (adminPages.has(activePage) && !isCurrentUserAdmin) return null
+  if (adminPages.has(activePage) && isSessionLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#e9e9e9] p-6 text-center font-sans text-[14px] font-black text-[#8a551f]">
+        Carregando painel...
+      </div>
+    )
+  }
+  if (adminPages.has(activePage) && !isCurrentUserAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#e9e9e9] p-6 text-center font-sans text-[14px] font-black text-[#8a551f]">
+        Verificando acesso...
+      </div>
+    )
+  }
 
   if (activePage === "admin-inicio") return <AdminHome {...pageProps} />
   if (activePage === "admin-equipes") return <AdminEquipes {...pageProps} />

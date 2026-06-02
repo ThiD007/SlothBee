@@ -28,6 +28,7 @@ app.use("/users", userRoutes);
 app.use("/timers", timerRoutes);
 app.use("/points", pointsRoutes);
 app.use("/balance", balanceRoutes);
+app.use("/teams", teamRoutes);
 app.use(goalRoutes);
 app.use(blogRoutes);
 

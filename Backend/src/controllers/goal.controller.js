@@ -37,6 +37,15 @@ async function list(req, res, next) {
   }
 }
 
+async function completedCount(req, res, next) {
+  try {
+    const completedGoals = await goalRepo.countCompletedGoals(req.user.id);
+    res.json({ completedGoals });
+  } catch (e) {
+    next(e);
+  }
+}
+
 async function toggle(req, res, next) {
   try {
     const goal = await goalRepo.findGoalForUser(req.params.id, req.user.id);
@@ -104,6 +113,15 @@ async function adminListToday(req, res, next) {
   }
 }
 
+async function adminSummary(req, res, next) {
+  try {
+    const summary = await goalRepo.getAdminGoalsSummary();
+    res.json({ summary });
+  } catch (e) {
+    next(e);
+  }
+}
+
 async function adminCreateToday(req, res, next) {
   try {
     const input = validateGoalInput(req.body.titulo || req.body.text, GOAL_POINTS);
@@ -139,11 +157,13 @@ async function adminDeleteToday(req, res, next) {
 
 module.exports = {
   list,
+  completedCount,
   toggle,
   createSelfcare,
   updateSelfcare,
   deleteSelfcare,
   adminListToday,
+  adminSummary,
   adminCreateToday,
   adminUpdateToday,
   adminDeleteToday,

@@ -30,7 +30,8 @@ async function listUsers() {
             telefone,
             cargo,
             foto_perfil,
-            COALESCE(pontos_mel, 0) AS pontos_mel
+            COALESCE(pontos_mel, 0) AS pontos_mel,
+            equipe_id
          FROM usuarios
          ORDER BY nome`
     );
