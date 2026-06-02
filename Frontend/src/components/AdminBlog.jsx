@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
-import { addBlogPostWithImage, deleteBlogPost, getBlogPosts } from "../services/blogPosts.js"
+import { addBlogPostWithImage, deleteBlogPost, getBlogPosts, updateBlogPostWithImage } from "../services/blogPosts.js"
 import { AdminFrame, Icon, Logo } from "./shared.jsx"
 
-function AdminPostCard({ post, onDelete }) {
+function AdminPostCard({ post, onDelete, onEdit }) {
   return (
     <article className="grid gap-3 rounded-lg bg-white p-3 shadow-sm sm:grid-cols-[96px_1fr_auto] sm:items-center">
       <div className={`flex h-24 items-center justify-center rounded-sm ${post.imageBg}`}>
@@ -20,7 +20,12 @@ function AdminPostCard({ post, onDelete }) {
       </div>
 
       <div className="flex gap-2 sm:grid">
-        <button type="button" className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#fbe7c6] text-[#8a551f]">
+        <button
+          type="button"
+          onClick={() => onEdit(post)}
+          className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#fbe7c6] text-[#8a551f]"
+          aria-label={`Editar ${post.title}`}
+        >
           <Icon className="h-4 w-4" name="edit" />
         </button>
         <button
@@ -47,6 +52,8 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [imageFile, setImageFile] = useState(null)
+  const [editingPost, setEditingPost] = useState(null)
+  const [removeCurrentImage, setRemoveCurrentImage] = useState(false)
   const fileInputRef = useRef(null)
 
   const imagePreview = useMemo(() => {
@@ -88,12 +95,35 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
     if (!file) return
 
     setImageFile(file)
+    setRemoveCurrentImage(false)
     setMessage("")
   }
 
   function handleRemoveImage() {
     setImageFile(null)
+    setRemoveCurrentImage(Boolean(editingPost?.image))
     if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  function resetForm() {
+    setFormData({ title: "", category: "", summary: "" })
+    setEditingPost(null)
+    setImageFile(null)
+    setRemoveCurrentImage(false)
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  function handleEditPost(post) {
+    setEditingPost(post)
+    setFormData({
+      title: post.title || "",
+      category: post.category || "",
+      summary: post.summary || "",
+    })
+    setImageFile(null)
+    setRemoveCurrentImage(false)
+    if (fileInputRef.current) fileInputRef.current.value = ""
+    setMessage("Editando blog selecionado.")
   }
 
   async function handleSubmit(event) {
@@ -110,11 +140,21 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
 
     try {
       setIsSaving(true)
-      await addBlogPostWithImage({ title, category, summary, imageFile })
+      if (editingPost) {
+        await updateBlogPostWithImage({
+          id: editingPost.id,
+          title,
+          category,
+          summary,
+          imageFile,
+          keepCurrentImage: !removeCurrentImage,
+        })
+      } else {
+        await addBlogPostWithImage({ title, category, summary, imageFile })
+      }
       await loadPosts()
-      setFormData({ title: "", category: "", summary: "" })
-      handleRemoveImage()
-      setMessage("Blog adicionado com sucesso.")
+      resetForm()
+      setMessage(editingPost ? "Blog atualizado com sucesso." : "Blog adicionado com sucesso.")
     } catch (error) {
       setMessage(error.message)
     } finally {
@@ -156,7 +196,9 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
             {isLoading ? (
               <p className="rounded-lg bg-white p-4 text-[12px] font-black text-[#6c6b5f] shadow-sm">Carregando blogs...</p>
             ) : posts.length ? (
-              posts.map((post) => <AdminPostCard key={post.id} post={post} onDelete={handleDeletePost} />)
+              posts.map((post) => (
+                <AdminPostCard key={post.id} post={post} onDelete={handleDeletePost} onEdit={handleEditPost} />
+              ))
             ) : (
               <p className="rounded-lg bg-white p-4 text-[12px] font-black text-[#6c6b5f] shadow-sm">
                 Nenhum blog cadastrado ainda.
@@ -168,8 +210,8 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
         <aside className="grid content-start gap-3">
           <section className="rounded-lg bg-white p-5 shadow-sm">
             <div className="flex items-center gap-2 text-base font-black text-[#87521f]">
-              <Icon className="h-6 w-6 text-[#a36922]" name="plus" />
-              Novo blog
+              <Icon className="h-6 w-6 text-[#a36922]" name={editingPost ? "edit" : "plus"} />
+              {editingPost ? "Editar blog" : "Novo blog"}
             </div>
 
             <form className="mt-4 grid gap-3" onSubmit={handleSubmit}>
@@ -210,9 +252,13 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-white">
                     <img
-                      src={imagePreview || plantinhaImg}
+                      src={imagePreview || (!removeCurrentImage && editingPost?.image) || plantinhaImg}
                       alt="Previa do blog"
-                      className={`h-full w-full ${imagePreview ? "object-cover" : "object-contain p-2 opacity-80"}`}
+                      className={`h-full w-full ${
+                        imagePreview || (!removeCurrentImage && editingPost?.image)
+                          ? "object-cover"
+                          : "object-contain p-2 opacity-80"
+                      }`}
                     />
                   </div>
                   <div className="grid flex-1 gap-2">
@@ -228,11 +274,11 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                       onClick={() => fileInputRef.current?.click()}
                       type="button"
                     >
-                      {imageFile ? "Trocar imagem" : "Adicionar imagem"}
+                      {imageFile || editingPost?.image ? "Trocar imagem" : "Adicionar imagem"}
                     </button>
                     <button
                       className="h-9 rounded-sm bg-[#fbe7c6] text-[12px] font-black text-[#8a551f] disabled:opacity-60"
-                      disabled={!imageFile}
+                      disabled={!imageFile && (!editingPost?.image || removeCurrentImage)}
                       onClick={handleRemoveImage}
                       type="button"
                     >
@@ -247,9 +293,21 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                 disabled={isSaving}
                 className="mt-2 inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-[#b3c843] px-4 text-[12px] font-black text-[#795719]"
               >
-                {isSaving ? "Salvando..." : "Adicionar blog"}
-                <Icon className="h-4 w-4" name="plus" />
+                {isSaving ? "Salvando..." : editingPost ? "Salvar blog" : "Adicionar blog"}
+                <Icon className="h-4 w-4" name={editingPost ? "edit" : "plus"} />
               </button>
+              {editingPost && (
+                <button
+                  className="h-10 rounded-sm bg-[#fbe7c6] text-[12px] font-black text-[#8a551f]"
+                  onClick={() => {
+                    resetForm()
+                    setMessage("")
+                  }}
+                  type="button"
+                >
+                  Cancelar edicao
+                </button>
+              )}
             </form>
           </section>
 

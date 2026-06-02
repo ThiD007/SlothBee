@@ -86,6 +86,32 @@ export async function addBlogPostWithImage({ title, category, summary, imageFile
   return normalizePost(data.blog)
 }
 
+export async function updateBlogPostWithImage({ id, title, category, summary, imageFile, keepCurrentImage = true }) {
+  const accessToken = localStorage.getItem("accessToken")
+  const formData = new FormData()
+  formData.append("titulo", title)
+  formData.append("categoria", category)
+  formData.append("resumo", summary)
+  formData.append("keepCurrentImage", keepCurrentImage ? "true" : "false")
+  if (imageFile) formData.append("foto_blog", imageFile)
+
+  const response = await fetch(`${API_URL}/admin/blogs/${id}`, {
+    method: "PUT",
+    headers: {
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
+    body: formData,
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw createApiError(response, data, "Erro ao conectar com o servidor")
+  }
+
+  return normalizePost(data.blog)
+}
+
 export function deleteBlogPost(id) {
   return request(`/admin/blogs/${id}`, { method: "DELETE" })
 }

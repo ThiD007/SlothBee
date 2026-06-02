@@ -4,6 +4,7 @@ import balancaImg from "../public/slothBeeBalanca.png"
 import colmeiaSimboloImg from "../public/slothBeeColmeiaSimbolo.png"
 import mascoteAlmofadaImg from "../public/slothBeeMascoteComAlmofada.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
+import { getBlogPosts } from "../services/blogPosts.js"
 import { getAdminGoalsSummary } from "../services/goals.js"
 import { getTeams } from "../services/teams.js"
 import { AdminFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
@@ -30,6 +31,7 @@ function OverviewCard({ card }) {
 
 function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
   const [teams, setTeams] = useState([])
+  const [blogCount, setBlogCount] = useState(0)
   const [goalsSummary, setGoalsSummary] = useState({ totalSentGoals: 0, activeSentGoals: 0 })
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(true)
@@ -41,10 +43,11 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
       try {
         setIsLoading(true)
         setMessage("")
-        const [teamsData, goalsData] = await Promise.all([getTeams(), getAdminGoalsSummary()])
+        const [teamsData, goalsData, blogPosts] = await Promise.all([getTeams(), getAdminGoalsSummary(), getBlogPosts()])
         if (!ignore) {
           setTeams(Array.isArray(teamsData.teams) ? teamsData.teams : [])
           setGoalsSummary(goalsData.summary || { totalSentGoals: 0, activeSentGoals: 0 })
+          setBlogCount(Array.isArray(blogPosts) ? blogPosts.length : 0)
         }
       } catch (error) {
         if (!ignore) setMessage(error.message)
@@ -81,7 +84,7 @@ function AdminHome({ activePage, onNavigate, theme, onToggleTheme }) {
   const overviewCards = [
     { label: "Equipes ativas", value: String(teams.length).padStart(2, "0"), icon: "team" },
     { label: "Metas enviadas", value: String(goalsSummary.activeSentGoals || 0).padStart(2, "0"), icon: "goals" },
-    { label: "Posts no blog", value: "06", icon: "blog" },
+    { label: "Posts no blog", value: String(blogCount).padStart(2, "0"), icon: "blog" },
   ]
 
   return (

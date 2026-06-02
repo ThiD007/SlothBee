@@ -8,6 +8,14 @@ async function listBlogs() {
   return rows;
 }
 
+async function findBlogById(id) {
+  const [rows] = await db.query("SELECT id, titulo, categoria, resumo, foto_url, criado_em FROM blogs WHERE id = ?", [
+    id,
+  ]);
+
+  return rows[0];
+}
+
 async function createBlog({ titulo, categoria, resumo, foto_url }) {
   const [result] = await db.query(
     "INSERT INTO blogs (titulo, categoria, resumo, foto_url) VALUES (?, ?, ?, ?)",
@@ -15,6 +23,21 @@ async function createBlog({ titulo, categoria, resumo, foto_url }) {
   );
 
   return result.insertId;
+}
+
+async function updateBlog(id, { titulo, categoria, resumo, foto_url }) {
+  const fields = ["titulo = ?", "categoria = ?", "resumo = ?"];
+  const values = [titulo, categoria, resumo];
+
+  if (foto_url !== undefined) {
+    fields.push("foto_url = ?");
+    values.push(foto_url || null);
+  }
+
+  values.push(id);
+
+  const [result] = await db.query(`UPDATE blogs SET ${fields.join(", ")} WHERE id = ?`, values);
+  return result.affectedRows > 0;
 }
 
 async function deleteBlog(id) {
@@ -48,7 +71,9 @@ async function removeFavorite(userId, blogId) {
 
 module.exports = {
   listBlogs,
+  findBlogById,
   createBlog,
+  updateBlog,
   deleteBlog,
   listFavoriteBlogIds,
   findFavorite,

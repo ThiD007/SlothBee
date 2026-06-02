@@ -2,6 +2,8 @@ const blogRepo = require("../repositories/blog.repo");
 const { uploadBlogImage } = require("../utils/cloudinary");
 
 function normalizeBlog(blog) {
+  if (!blog) return null;
+
   return {
     id: blog.id,
     title: blog.titulo,
@@ -30,7 +32,7 @@ function validateBlogInput(body) {
 async function list(req, res, next) {
   try {
     const blogs = await blogRepo.listBlogs();
-    res.json({ blogs: blogs.map(normalizeBlog) });
+    res.json({ blogs: blogs.map(normalizeBlog).filter(Boolean) });
   } catch (e) {
     next(e);
   }
@@ -47,16 +49,33 @@ async function create(req, res, next) {
     }
 
     const id = await blogRepo.createBlog(input);
+    const blog = await blogRepo.findBlogById(id);
+
     res.status(201).json({
-      blog: normalizeBlog({
-        id,
-        titulo: input.titulo,
-        categoria: input.categoria,
-        resumo: input.resumo,
-        foto_url: input.foto_url,
-        criado_em: new Date(),
-      }),
+      blog: normalizeBlog(blog),
     });
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function update(req, res, next) {
+  try {
+    const input = validateBlogInput(req.body);
+    if (input.error) return res.status(400).json({ message: input.error });
+
+    if (req.file) {
+      const upload = await uploadBlogImage(req.file);
+      input.foto_url = upload.secure_url;
+    } else if (req.body.keepCurrentImage === "true") {
+      delete input.foto_url;
+    }
+
+    const updated = await blogRepo.updateBlog(req.params.id, input);
+    if (!updated) return res.status(404).json({ message: "Blog nao encontrado" });
+
+    const blog = await blogRepo.findBlogById(req.params.id);
+    res.json({ blog: normalizeBlog(blog) });
   } catch (e) {
     next(e);
   }
@@ -105,6 +124,7 @@ async function toggleFavorite(req, res, next) {
 module.exports = {
   list,
   create,
+  update,
   remove,
   listFavorites,
   toggleFavorite,
