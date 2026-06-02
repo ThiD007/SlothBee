@@ -1,4 +1,5 @@
 const blogRepo = require("../repositories/blog.repo");
+const { uploadBlogImage } = require("../utils/cloudinary");
 
 function normalizeBlog(blog) {
   return {
@@ -39,6 +40,11 @@ async function create(req, res, next) {
   try {
     const input = validateBlogInput(req.body);
     if (input.error) return res.status(400).json({ message: input.error });
+
+    if (req.file) {
+      const upload = await uploadBlogImage(req.file);
+      input.foto_url = upload.secure_url;
+    }
 
     const id = await blogRepo.createBlog(input);
     res.status(201).json({

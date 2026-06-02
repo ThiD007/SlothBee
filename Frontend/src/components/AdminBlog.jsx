@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import abelhaImg from "../public/slothBeeAbelha.png"
 import plantinhaImg from "../public/slothBeePlantinha.png"
-import { addBlogPost, deleteBlogPost, getBlogPosts } from "../services/blogPosts.js"
+import { addBlogPostWithImage, deleteBlogPost, getBlogPosts } from "../services/blogPosts.js"
 import { AdminFrame, Icon, Logo } from "./shared.jsx"
 
 function AdminPostCard({ post, onDelete }) {
@@ -46,6 +46,19 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
+  const fileInputRef = useRef(null)
+
+  const imagePreview = useMemo(() => {
+    if (!imageFile) return ""
+    return URL.createObjectURL(imageFile)
+  }, [imageFile])
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview)
+    }
+  }, [imagePreview])
 
   async function loadPosts() {
     try {
@@ -70,6 +83,19 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
     }))
   }
 
+  function handleImageChange(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setImageFile(file)
+    setMessage("")
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null)
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -84,9 +110,10 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
 
     try {
       setIsSaving(true)
-      await addBlogPost({ title, category, summary })
+      await addBlogPostWithImage({ title, category, summary, imageFile })
       await loadPosts()
       setFormData({ title: "", category: "", summary: "" })
+      handleRemoveImage()
       setMessage("Blog adicionado com sucesso.")
     } catch (error) {
       setMessage(error.message)
@@ -178,6 +205,42 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                   className="mt-1 min-h-24 w-full resize-none rounded-sm bg-[#f7f3e8] px-3 py-2 text-[12px] font-bold text-[#8a551f] outline-none"
                 />
               </label>
+              <section className="rounded-sm bg-[#f7f3e8] p-3">
+                <p className="text-[12px] font-black text-[#8c9b3b]">Imagem do blog</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-white">
+                    <img
+                      src={imagePreview || plantinhaImg}
+                      alt="Previa do blog"
+                      className={`h-full w-full ${imagePreview ? "object-cover" : "object-contain p-2 opacity-80"}`}
+                    />
+                  </div>
+                  <div className="grid flex-1 gap-2">
+                    <input
+                      ref={fileInputRef}
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                      type="file"
+                    />
+                    <button
+                      className="h-9 rounded-sm bg-white text-[12px] font-black text-[#8a551f]"
+                      onClick={() => fileInputRef.current?.click()}
+                      type="button"
+                    >
+                      {imageFile ? "Trocar imagem" : "Adicionar imagem"}
+                    </button>
+                    <button
+                      className="h-9 rounded-sm bg-[#fbe7c6] text-[12px] font-black text-[#8a551f] disabled:opacity-60"
+                      disabled={!imageFile}
+                      onClick={handleRemoveImage}
+                      type="button"
+                    >
+                      Remover imagem
+                    </button>
+                  </div>
+                </div>
+              </section>
               {message && <p className="text-[12px] font-black text-[#5d8f44]">{message}</p>}
               <button
                 type="submit"

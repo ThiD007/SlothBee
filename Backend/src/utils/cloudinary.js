@@ -39,6 +39,29 @@ function uploadProfilePhoto(file, userId) {
   });
 }
 
+function uploadBlogImage(file) {
+  ensureCloudinaryConfig();
+
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "slothbee/blogs",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(result);
+      }
+    );
+
+    stream.end(file.buffer);
+  });
+}
+
 async function deleteProfilePhoto(userId) {
   if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
     return;
@@ -49,4 +72,4 @@ async function deleteProfilePhoto(userId) {
   });
 }
 
-module.exports = { uploadProfilePhoto, deleteProfilePhoto };
+module.exports = { uploadProfilePhoto, uploadBlogImage, deleteProfilePhoto };
