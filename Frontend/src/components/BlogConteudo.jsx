@@ -44,7 +44,7 @@ function BlogConteudo({ post, onBack }) {
         </div>
 
         <div className="border-t border-[#efe3cf] bg-[#fffdf8] p-5 sm:p-8">
-          <aside className="ml-auto grid max-w-[320px] content-start gap-4">
+          <aside className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-stretch">
             <section className="rounded-lg bg-[#fff8dd] p-5 shadow-sm">
               <div className="flex items-center gap-2">
                 <img src={abelhaImg} alt="" className="h-9 w-9 object-contain" />
@@ -60,9 +60,9 @@ function BlogConteudo({ post, onBack }) {
               </ul>
             </section>
 
-            <section className="rounded-lg bg-white p-4 text-center shadow-sm">
-              <img src={mascoteAlmofadaImg} alt="" className="mx-auto h-24 w-24 object-contain" />
-              <p className="mt-2 text-[12px] font-black leading-snug text-[#8a551f]">
+            <section className="flex min-h-full flex-col items-center justify-center rounded-lg bg-white p-5 text-center shadow-sm">
+              <img src={mascoteAlmofadaImg} alt="" className="mx-auto h-28 w-28 object-contain" />
+              <p className="mt-3 text-[13px] font-black leading-snug text-[#8a551f]">
                 Uma pausa pequena tambem conta.
               </p>
             </section>
