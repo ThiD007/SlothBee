@@ -38,6 +38,17 @@ async function saveProfilePhotoLocally(file, userId) {
   return { secure_url: `/uploads/profile/${fileName}` };
 }
 
+async function saveBlogImageLocally(file) {
+  const uploadDir = path.join(__dirname, "../../uploads/blogs");
+  const fileName = `blog-${Date.now()}-${Math.round(Math.random() * 1e9)}${getImageExtension(file)}`;
+  const filePath = path.join(uploadDir, fileName);
+
+  await fs.mkdir(uploadDir, { recursive: true });
+  await fs.writeFile(filePath, file.buffer);
+
+  return { secure_url: `/uploads/blogs/${fileName}` };
+}
+
 async function uploadProfilePhoto(file, userId) {
   try {
     return await uploadProfilePhotoToCloudinary(file, userId);
@@ -72,7 +83,16 @@ function uploadProfilePhotoToCloudinary(file, userId) {
   });
 }
 
-function uploadBlogImage(file) {
+async function uploadBlogImage(file) {
+  try {
+    return await uploadBlogImageToCloudinary(file);
+  } catch (error) {
+    console.error("Cloudinary blog upload failed, saving locally:", error.message);
+    return saveBlogImageLocally(file);
+  }
+}
+
+function uploadBlogImageToCloudinary(file) {
   ensureCloudinaryConfig();
 
   return new Promise((resolve, reject) => {

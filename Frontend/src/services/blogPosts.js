@@ -1,9 +1,16 @@
 import plantinhaImg from "../public/slothBeePlantinha.png"
 import { API_URL, createApiError } from "./auth.js"
 
+function getBlogImageUrl(fotoUrl) {
+  if (!fotoUrl) return ""
+  if (fotoUrl.startsWith("http") || fotoUrl.startsWith("data:")) return fotoUrl
+  return `${API_URL}${fotoUrl.startsWith("/") ? fotoUrl : `/${fotoUrl}`}`
+}
+
 function normalizePost(post) {
   const summary = post.summary || post.resumo || ""
   const fotoUrl = post.fotoUrl || post.foto_url || ""
+  const imageUrl = getBlogImageUrl(fotoUrl)
 
   return {
     id: post.id,
@@ -11,7 +18,7 @@ function normalizePost(post) {
     category: post.category || post.categoria || "",
     summary,
     fotoUrl,
-    image: fotoUrl || plantinhaImg,
+    image: imageUrl || plantinhaImg,
     imageBg: fotoUrl ? "bg-white" : "bg-[#dff4f7]",
     content: Array.isArray(post.content) && post.content.length ? post.content : [summary],
     tips:

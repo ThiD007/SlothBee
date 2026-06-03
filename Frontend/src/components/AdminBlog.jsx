@@ -60,6 +60,7 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
     if (!imageFile) return ""
     return URL.createObjectURL(imageFile)
   }, [imageFile])
+  const currentImagePreview = !removeCurrentImage ? editingPost?.image : ""
 
   useEffect(() => {
     return () => {
@@ -252,12 +253,10 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-white">
                     <img
-                      src={imagePreview || (!removeCurrentImage && editingPost?.fotoUrl) || plantinhaImg}
+                      src={imagePreview || currentImagePreview || plantinhaImg}
                       alt="Previa do blog"
                       className={`h-full w-full ${
-                        imagePreview || (!removeCurrentImage && editingPost?.fotoUrl)
-                          ? "object-cover"
-                          : "object-contain p-2 opacity-80"
+                        imagePreview || currentImagePreview ? "object-cover" : "object-contain p-2 opacity-80"
                       }`}
                     />
                   </div>
