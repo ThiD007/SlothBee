@@ -246,7 +246,6 @@ function BlogList({ currentUser, favoritesOnly = false, onRead }) {
                 <p className="mt-2 max-w-[560px] text-sm font-bold leading-relaxed text-[#6c6b5f]">{pageDescription}</p>
               </div>
             </div>
-            <img src={plantinhaImg} alt="" className="absolute -bottom-10 -right-6 h-36 w-36 object-contain opacity-80" />
           </header>
 
           {categories.length > 2 && (
