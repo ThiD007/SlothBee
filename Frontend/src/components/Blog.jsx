@@ -196,10 +196,21 @@ function BlogList({ currentUser, favoritesOnly = false, onRead }) {
     }
   }, [currentUser])
 
+  const categorySourcePosts = useMemo(() => {
+    if (!favoritesOnly) return blogPosts
+    return blogPosts.filter((post) => favoriteIds.includes(String(post.id)))
+  }, [blogPosts, favoriteIds, favoritesOnly])
+
   const categories = useMemo(() => {
-    const uniqueCategories = blogPosts.map((post) => post.category).filter(Boolean)
+    const uniqueCategories = categorySourcePosts.map((post) => post.category).filter(Boolean)
     return ["Todos", ...Array.from(new Set(uniqueCategories))]
-  }, [blogPosts])
+  }, [categorySourcePosts])
+
+  useEffect(() => {
+    if (!categories.includes(activeCategory)) {
+      setActiveCategory("Todos")
+    }
+  }, [activeCategory, categories])
 
   const visiblePosts = useMemo(() => {
     const posts = favoritesOnly
