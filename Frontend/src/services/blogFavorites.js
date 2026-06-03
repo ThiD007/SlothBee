@@ -23,11 +23,17 @@ async function request(path, options = {}) {
 }
 
 export async function getFavoriteBlogIds() {
+  if (!localStorage.getItem("accessToken")) return []
+
   const data = await request("/blogs/favorites")
   return (data.favoriteIds || []).map(String)
 }
 
 export async function toggleFavoriteBlog(blogId) {
+  if (!localStorage.getItem("accessToken")) {
+    throw new Error("Entre na sua conta para favoritar blogs")
+  }
+
   const data = await request(`/blogs/${blogId}/favorite`, { method: "POST" })
   return (data.favoriteIds || []).map(String)
 }

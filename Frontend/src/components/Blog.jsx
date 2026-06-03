@@ -166,8 +166,18 @@ function BlogList({ currentUser, favoritesOnly = false, onRead }) {
     async function loadPosts() {
       try {
         setIsLoading(true)
-        const [posts, favorites] = await Promise.all([getBlogPosts(), getFavoriteBlogIds()])
+        const [postsResult, favoritesResult] = await Promise.allSettled([getBlogPosts(), getFavoriteBlogIds()])
         if (!ignore) {
+          if (postsResult.status === "rejected") {
+            setBlogMessage(postsResult.reason.message)
+            setBlogPosts([])
+            setFavoriteIds([])
+            return
+          }
+
+          const posts = postsResult.value
+          const favorites = favoritesResult.status === "fulfilled" ? favoritesResult.value : []
+
           setBlogPosts(posts)
           setFavoriteIds(favorites)
           setBlogMessage(posts.length ? "" : "Nenhum blog cadastrado ainda.")
