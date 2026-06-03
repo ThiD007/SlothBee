@@ -168,7 +168,7 @@ function Metas({ activePage, onNavigate, theme, onToggleTheme }) {
                 Cada meta de autocuidado vale {SELFCARE_GOAL_POINTS} pontos de mel.
               </p>
               <div className="flex flex-wrap gap-2">
-                <button className="h-9 rounded-sm bg-[#b3c843] px-4 text-[12px] font-black text-[#795719]" type="submit">
+                <button className="selfcare-goal-submit h-9 rounded-sm px-4 text-[12px] font-black" type="submit">
                   {editingGoalId ? "Salvar meta" : "Adicionar meta"}
                 </button>
                 {editingGoalId && (

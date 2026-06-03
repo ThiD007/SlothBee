@@ -44,9 +44,9 @@ function FavoriteButton({ isFavorite, onClick, title, large = false }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex shrink-0 items-center justify-center rounded-full shadow-sm transition-colors ${
+      className={`favorite-toggle ${isFavorite ? "favorite-toggle-active" : ""} flex shrink-0 items-center justify-center rounded-full shadow-sm transition-colors ${
         large ? "h-11 w-11" : "h-9 w-9"
-      } ${isFavorite ? "bg-[#ffd44a] text-[#8a551f]" : "bg-white text-[#a36922] hover:bg-[#fbe7c6]"}`}
+      }`}
       aria-label={isFavorite ? `Remover ${title} dos favoritos` : `Favoritar ${title}`}
       aria-pressed={isFavorite}
     >
