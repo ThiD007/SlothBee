@@ -23,6 +23,9 @@ const emptyProfile = {
   senha: "",
 }
 
+const PROFILE_PHOTO_MAX_SIZE_MB = 8
+const PROFILE_PHOTO_MAX_SIZE_BYTES = PROFILE_PHOTO_MAX_SIZE_MB * 1024 * 1024
+
 function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   const [profile, setProfile] = useState(emptyProfile)
   const [formData, setFormData] = useState(emptyProfile)
@@ -159,6 +162,18 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   async function handlePhotoChange(event) {
     const file = event.target.files?.[0]
     if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      setMessage("Envie apenas arquivos de imagem.")
+      event.target.value = ""
+      return
+    }
+
+    if (file.size > PROFILE_PHOTO_MAX_SIZE_BYTES) {
+      setMessage(`A imagem deve ter no maximo ${PROFILE_PHOTO_MAX_SIZE_MB}MB.`)
+      event.target.value = ""
+      return
+    }
 
     try {
       setIsPhotoSaving(true)

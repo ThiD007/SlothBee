@@ -1,9 +1,12 @@
 const multer = require("multer");
 
+const IMAGE_MAX_SIZE_MB = 8;
+const IMAGE_MAX_SIZE_BYTES = IMAGE_MAX_SIZE_MB * 1024 * 1024;
+
 const uploadProfilePhoto = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 2 * 1024 * 1024,
+    fileSize: IMAGE_MAX_SIZE_BYTES,
   },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) {
@@ -17,4 +20,4 @@ const uploadProfilePhoto = multer({
   },
 });
 
-module.exports = { uploadProfilePhoto };
+module.exports = { uploadProfilePhoto, IMAGE_MAX_SIZE_MB };
