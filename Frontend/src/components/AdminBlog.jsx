@@ -101,7 +101,7 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
 
   function handleRemoveImage() {
     setImageFile(null)
-    setRemoveCurrentImage(Boolean(editingPost?.image))
+    setRemoveCurrentImage(Boolean(editingPost?.fotoUrl))
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
@@ -252,10 +252,10 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-white">
                     <img
-                      src={imagePreview || (!removeCurrentImage && editingPost?.image) || plantinhaImg}
+                      src={imagePreview || (!removeCurrentImage && editingPost?.fotoUrl) || plantinhaImg}
                       alt="Previa do blog"
                       className={`h-full w-full ${
-                        imagePreview || (!removeCurrentImage && editingPost?.image)
+                        imagePreview || (!removeCurrentImage && editingPost?.fotoUrl)
                           ? "object-cover"
                           : "object-contain p-2 opacity-80"
                       }`}
@@ -274,11 +274,11 @@ function AdminBlog({ activePage, onNavigate, theme, onToggleTheme }) {
                       onClick={() => fileInputRef.current?.click()}
                       type="button"
                     >
-                      {imageFile || editingPost?.image ? "Trocar imagem" : "Adicionar imagem"}
+                      {imageFile || editingPost?.fotoUrl ? "Trocar imagem" : "Adicionar imagem"}
                     </button>
                     <button
                       className="h-9 rounded-sm bg-[#fbe7c6] text-[12px] font-black text-[#8a551f] disabled:opacity-60"
-                      disabled={!imageFile && (!editingPost?.image || removeCurrentImage)}
+                      disabled={!imageFile && (!editingPost?.fotoUrl || removeCurrentImage)}
                       onClick={handleRemoveImage}
                       type="button"
                     >

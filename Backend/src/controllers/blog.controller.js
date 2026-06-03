@@ -5,7 +5,7 @@ function normalizeBlog(blog) {
   if (!blog) return null;
 
   return {
-    id: blog.id,
+    id: Number(blog.id),
     title: blog.titulo,
     category: blog.categoria,
     summary: blog.resumo,

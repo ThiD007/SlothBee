@@ -2,17 +2,27 @@ const repo = require("../repositories/user.repo");
 const { hashPassword } = require("../utils/password");
 const { uploadProfilePhoto, deleteProfilePhoto } = require("../utils/cloudinary");
 
+function normalizeUser(user) {
+  if (!user) return null;
+
+  return {
+    ...user,
+    id: Number(user.id),
+    equipe_id: user.equipe_id === null || user.equipe_id === undefined ? null : Number(user.equipe_id),
+  };
+}
+
 async function me(req, res, next) {
   try {
     const user = await repo.findById(req.user.id);
-    res.json(user);
+    res.json(normalizeUser(user));
   } catch (e) { next(e); }
 }
 
 async function list(req, res, next) {
   try {
     const users = await repo.listUsers();
-    res.json({ users });
+    res.json({ users: users.map(normalizeUser).filter(Boolean) });
   } catch (e) { next(e); }
 }
 
@@ -36,7 +46,7 @@ async function update(req, res, next) {
       senha: password_hash,
     });
     const user = await repo.findById(req.user.id);
-    res.json(user);
+    res.json(normalizeUser(user));
   } catch(e){ next(e);}
 }
 
@@ -50,7 +60,7 @@ async function updatePhoto(req, res, next) {
     await repo.userPhotoUpdate(req.user.id, upload.secure_url);
 
     const user = await repo.findById(req.user.id);
-    res.json(user);
+    res.json(normalizeUser(user));
   } catch (e) {
     next(e);
   }
@@ -62,7 +72,7 @@ async function removePhoto(req, res, next) {
     await repo.userPhotoUpdate(req.user.id, null);
 
     const user = await repo.findById(req.user.id);
-    res.json(user);
+    res.json(normalizeUser(user));
   } catch (e) {
     next(e);
   }

@@ -5,7 +5,7 @@ const GOAL_POINTS = 15;
 
 function normalizeGoal(goal) {
   return {
-    id: goal.id,
+    id: Number(goal.id),
     text: goal.titulo,
     points: GOAL_POINTS,
     type: goal.tipo,
@@ -88,8 +88,10 @@ async function updateSelfcare(req, res, next) {
     const input = validateGoalInput(req.body.titulo || req.body.text, GOAL_POINTS);
     if (input.error) return res.status(400).json({ message: input.error });
 
-    await goalRepo.updateSelfcareGoal(req.params.id, req.user.id, input.titulo, input.pontos);
-    res.json({ goal: { id: Number(req.params.id), text: input.titulo, points: input.pontos, type: "selfcare" } });
+    const updated = await goalRepo.updateSelfcareGoal(req.params.id, req.user.id, input.titulo, input.pontos);
+    if (!updated) return res.status(404).json({ message: "Meta nao encontrada" });
+
+    res.json({ goal: { id: Number(req.params.id), text: input.titulo, points: input.pontos, type: "selfcare", done: false } });
   } catch (e) {
     next(e);
   }
@@ -97,7 +99,9 @@ async function updateSelfcare(req, res, next) {
 
 async function deleteSelfcare(req, res, next) {
   try {
-    await goalRepo.deleteSelfcareGoal(req.params.id, req.user.id);
+    const deleted = await goalRepo.deleteSelfcareGoal(req.params.id, req.user.id);
+    if (!deleted) return res.status(404).json({ message: "Meta nao encontrada" });
+
     res.json({ message: "Meta removida" });
   } catch (e) {
     next(e);

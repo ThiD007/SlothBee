@@ -40,7 +40,7 @@ function buildTeamBalance(team) {
 
 function normalizeTeam(team) {
   return {
-    id: team.id,
+    id: Number(team.id),
     nome_equipe: team.nome_equipe,
     pontos_equipe: Number(team.pontos_equipe || 0),
     metas_equipe: Number(team.metas_equipe || 0),
@@ -85,7 +85,7 @@ function buildMemberHighlight(member) {
   const balance = buildBalanceFromScores(focusScore, restScore);
 
   return {
-    id: member.id,
+    id: Number(member.id),
     name: member.nome || "Usuario",
     value: `${balance.focus}%`,
   };

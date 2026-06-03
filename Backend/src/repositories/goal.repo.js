@@ -107,16 +107,26 @@ async function createSelfcareGoal(userId, titulo, pontos) {
 }
 
 async function updateSelfcareGoal(id, userId, titulo, pontos) {
-  await db.query("UPDATE metas SET titulo = $1, pontos = $2 WHERE id = $3 AND tipo = 'selfcare' AND usuario_id = $4", [
-    titulo,
-    pontos,
-    id,
-    userId,
-  ]);
+  const result = await db.query(
+    "UPDATE metas SET titulo = $1, pontos = $2 WHERE id = $3 AND tipo = 'selfcare' AND usuario_id = $4 AND active = TRUE",
+    [
+      titulo,
+      pontos,
+      id,
+      userId,
+    ]
+  );
+
+  return result.rowCount > 0;
 }
 
 async function deleteSelfcareGoal(id, userId) {
-  await db.query("UPDATE metas SET active = FALSE WHERE id = $1 AND tipo = 'selfcare' AND usuario_id = $2", [id, userId]);
+  const result = await db.query(
+    "UPDATE metas SET active = FALSE WHERE id = $1 AND tipo = 'selfcare' AND usuario_id = $2 AND active = TRUE",
+    [id, userId]
+  );
+
+  return result.rowCount > 0;
 }
 
 async function findGoalForUser(id, userId) {

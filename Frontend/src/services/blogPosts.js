@@ -3,14 +3,16 @@ import { API_URL, createApiError } from "./auth.js"
 
 function normalizePost(post) {
   const summary = post.summary || post.resumo || ""
+  const fotoUrl = post.fotoUrl || post.foto_url || ""
 
   return {
     id: post.id,
     title: post.title || post.titulo || "",
     category: post.category || post.categoria || "",
     summary,
-    image: post.fotoUrl || post.foto_url || plantinhaImg,
-    imageBg: post.fotoUrl || post.foto_url ? "bg-white" : "bg-[#dff4f7]",
+    fotoUrl,
+    image: fotoUrl || plantinhaImg,
+    imageBg: fotoUrl ? "bg-white" : "bg-[#dff4f7]",
     content: Array.isArray(post.content) && post.content.length ? post.content : [summary],
     tips:
       Array.isArray(post.tips) && post.tips.length
