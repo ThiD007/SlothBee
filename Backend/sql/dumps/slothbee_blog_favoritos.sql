@@ -16,29 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `equipes`
+-- Table structure for table `blog_favoritos`
 --
 
-DROP TABLE IF EXISTS `equipes`;
+DROP TABLE IF EXISTS `blog_favoritos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `equipes` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nome_equipe` varchar(100) NOT NULL,
-  `pontos_equipe` int DEFAULT '0',
-  `metas_equipe` int DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+CREATE TABLE `blog_favoritos` (
+  `usuario_id` int NOT NULL,
+  `blog_id` int NOT NULL,
+  `criado_em` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`usuario_id`,`blog_id`),
+  KEY `blog_id` (`blog_id`),
+  CONSTRAINT `blog_favoritos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `blog_favoritos_ibfk_2` FOREIGN KEY (`blog_id`) REFERENCES `blogs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `equipes`
+-- Dumping data for table `blog_favoritos`
 --
 
-LOCK TABLES `equipes` WRITE;
-/*!40000 ALTER TABLE `equipes` DISABLE KEYS */;
-INSERT INTO `equipes` VALUES (2,'Equipe Abelha',0,0),(3,'Equipe Colmeia',0,0);
-/*!40000 ALTER TABLE `equipes` ENABLE KEYS */;
+LOCK TABLES `blog_favoritos` WRITE;
+/*!40000 ALTER TABLE `blog_favoritos` DISABLE KEYS */;
+INSERT INTO `blog_favoritos` VALUES (7,1,'2026-06-03 02:03:50');
+/*!40000 ALTER TABLE `blog_favoritos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
