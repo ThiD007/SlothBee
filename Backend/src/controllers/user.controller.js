@@ -68,7 +68,8 @@ async function updatePhoto(req, res, next) {
 
 async function removePhoto(req, res, next) {
   try {
-    await deleteProfilePhoto(req.user.id);
+    const currentUser = await repo.findById(req.user.id);
+    await deleteProfilePhoto(req.user.id, currentUser?.foto_perfil);
     await repo.userPhotoUpdate(req.user.id, null);
 
     const user = await repo.findById(req.user.id);

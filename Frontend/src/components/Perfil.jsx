@@ -38,6 +38,7 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState("")
   const [focusSummary, setFocusSummary] = useState(defaultFocusSummary)
+  const [photoCacheKey, setPhotoCacheKey] = useState(Date.now())
   const fileInputRef = useRef(null)
 
   const accessToken = useMemo(() => localStorage.getItem("accessToken"), [])
@@ -155,8 +156,9 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
 
   function getPhotoSrc(fotoPerfil) {
     if (!fotoPerfil) return mascoteAlmofadaImg
-    if (fotoPerfil.startsWith("http")) return fotoPerfil
-    return `${API_URL}${fotoPerfil}`
+    const separator = fotoPerfil.includes("?") ? "&" : "?"
+    if (fotoPerfil.startsWith("http")) return `${fotoPerfil}${separator}v=${photoCacheKey}`
+    return `${API_URL}${fotoPerfil}${separator}v=${photoCacheKey}`
   }
 
   async function handlePhotoChange(event) {
@@ -185,6 +187,7 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
       }
 
       setProfile(nextProfile)
+      setPhotoCacheKey(Date.now())
       setFormData((current) => ({ ...current, foto_perfil: nextProfile.foto_perfil }))
       setMessage("Foto atualizada com sucesso.")
     } catch (error) {
@@ -206,6 +209,7 @@ function Perfil({ activePage, onNavigate, theme, onToggleTheme }) {
       }
 
       setProfile(nextProfile)
+      setPhotoCacheKey(Date.now())
       setFormData((current) => ({ ...current, foto_perfil: nextProfile.foto_perfil }))
       setMessage("Foto removida com sucesso.")
     } catch (error) {
