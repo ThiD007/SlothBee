@@ -32,7 +32,7 @@ function CategoryPill({ active, children, onClick }) {
         active
           ? "bg-[#5d8f44] text-white shadow-sm"
           : "bg-white text-[#6f5b2e] shadow-sm hover:bg-[#edf4d8]"
-      }`}
+      } whitespace-nowrap`}
     >
       {children}
     </button>
@@ -270,7 +270,7 @@ function BlogList({ currentUser, favoritesOnly = false, onRead }) {
           </header>
 
           {categories.length > 2 && (
-            <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
+            <div className="category-scroll mb-5 flex gap-2 overflow-x-auto overflow-y-hidden pb-2">
               {categories.map((category) => (
                 <CategoryPill
                   key={category}

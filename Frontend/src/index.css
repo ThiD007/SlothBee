@@ -439,6 +439,47 @@ button:disabled {
     0 0 0 1px rgba(255, 230, 186, 0.08) !important;
 }
 
+.category-scroll {
+  scrollbar-color: #5d8f44 #fbe7c6;
+  scrollbar-width: thin;
+}
+
+.category-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.category-scroll::-webkit-scrollbar-track {
+  background-color: #fbe7c6;
+  border-radius: 999px;
+}
+
+.category-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #5d8f44, #a5bd43);
+  border: 2px solid #fbe7c6;
+  border-radius: 999px;
+}
+
+.category-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #4f8236, #8ea83a);
+}
+
+.theme-scope[data-theme="dark"] .category-scroll {
+  scrollbar-color: #d7f58d #2d2116;
+}
+
+.theme-scope[data-theme="dark"] .category-scroll::-webkit-scrollbar-track {
+  background-color: #2d2116;
+}
+
+.theme-scope[data-theme="dark"] .category-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #d7f58d, #ffd76a);
+  border-color: #2d2116;
+}
+
+.theme-scope[data-theme="dark"] .category-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #e6ffac, #ffe08a);
+}
+
 .theme-scope .favorite-toggle {
   background-color: #ffffff;
   color: #8a551f;

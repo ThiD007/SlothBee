@@ -43,14 +43,8 @@ function BlogConteudo({ post, onBack }) {
           </div>
         </div>
 
-        <div className="grid gap-6 border-t border-[#efe3cf] bg-[#fffdf8] p-5 sm:p-8 xl:grid-cols-[minmax(0,1fr)_280px]">
-          <div className="space-y-5 text-[15px] font-semibold leading-8 text-[#5f513f]">
-            {post.content.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-
-          <aside className="grid content-start gap-4">
+        <div className="border-t border-[#efe3cf] bg-[#fffdf8] p-5 sm:p-8">
+          <aside className="ml-auto grid max-w-[320px] content-start gap-4">
             <section className="rounded-lg bg-[#fff8dd] p-5 shadow-sm">
               <div className="flex items-center gap-2">
                 <img src={abelhaImg} alt="" className="h-9 w-9 object-contain" />
