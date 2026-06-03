@@ -12,7 +12,8 @@ import { finishTimer, getActiveTimer, getTimerSummary, startTimer } from "../ser
 import { defaultFocusSummary, formatFocusDuration } from "../utils/focusTime.js"
 import { AppFrame, HoneyPoints, Icon, ProgressBar } from "./shared.jsx"
 
-const FOCUS_SECONDS_PER_HONEY_POINT = 5 * 60
+const FOCUS_SECONDS_PER_HONEY_REWARD = 5 * 60
+const HONEY_POINTS_PER_FOCUS_REWARD = 5
 
 function formatSeconds(totalSeconds) {
   const safeSeconds = Math.max(0, totalSeconds)
@@ -47,6 +48,19 @@ function getBalanceBarValues(focus, rest) {
   return Number(focus) === 0 && Number(rest) === 0
     ? { focus: "50%", rest: "50%" }
     : { focus: `${focus}%`, rest: `${rest}%` }
+}
+
+function getTimerFocusElapsedSeconds(timer, currentSeconds) {
+  if (!timer) return 0
+
+  if (timer.mode === "countdown" && timer.durationSeconds) {
+    return Math.min(
+      timer.durationSeconds,
+      Math.max(0, timer.durationSeconds - currentSeconds)
+    )
+  }
+
+  return Math.max(0, currentSeconds)
 }
 
 function Inicio({
@@ -134,6 +148,15 @@ function Inicio({
     }
   }
 
+  async function refreshMyTeam() {
+    try {
+      const teamData = await getMyTeam()
+      setMyTeam(teamData.team)
+    } catch {
+      setMyTeam(null)
+    }
+  }
+
   function showHoneyToast(points) {
     if (!points || points <= 0) return
 
@@ -198,7 +221,9 @@ function Inicio({
 
   const chartLine = chartPoints.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x} ${y}`).join(" ")
   const chartArea = `${chartLine} L${chartPoints[chartPoints.length - 1][0]} 150 L${chartPoints[0][0]} 150 Z`
-  const liveEarnedHoneyPoints = timer?.status === "active" ? Math.floor(currentSeconds / FOCUS_SECONDS_PER_HONEY_POINT) : 0
+  const liveFocusElapsedSeconds = timer?.status === "active" ? getTimerFocusElapsedSeconds(timer, currentSeconds) : 0
+  const liveEarnedHoneyPoints =
+    Math.floor(liveFocusElapsedSeconds / FOCUS_SECONDS_PER_HONEY_REWARD) * HONEY_POINTS_PER_FOCUS_REWARD
   const liveHoneyPoints = honeyPoints + liveEarnedHoneyPoints
   const teamFocus = myTeam?.balance?.focus?.percentage ?? 0
   const teamRest = myTeam?.balance?.rest?.percentage ?? 0
@@ -217,6 +242,7 @@ function Inicio({
         setTimer(data.timer)
         setHoneyPoints(data.honeyPoints)
         await refreshBalance()
+        await refreshMyTeam()
         setFocusSummary(data.focusSummary || defaultFocusSummary)
         setTimerMessage("Sessão de foco finalizada")
         if (data.earnedHoneyPoints > 0) {
@@ -259,6 +285,7 @@ function Inicio({
       setTimer(data.timer)
       setHoneyPoints(data.honeyPoints)
       await refreshBalance()
+      await refreshMyTeam()
       setFocusSummary(data.focusSummary || defaultFocusSummary)
       setTimerMessage("Sessão de foco finalizada")
       if (data.earnedHoneyPoints > 0) {
